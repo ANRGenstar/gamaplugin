@@ -44,7 +44,7 @@
 		<repository>
 			<id>gama</id>
 			<name>GAMA Snapshots</name>
-			<url>http://vps226121.ovh.net/updates/</url>
+			<url>gama.unthinkingdepths.fr</url>
 			<layout>p2</layout>
 			<releases>
 				<enabled>true</enabled>
