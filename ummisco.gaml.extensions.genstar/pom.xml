@@ -9,7 +9,6 @@
   	<version>1.7.0-SNAPSHOT</version>
   	<relativePath>../ummisco.gaml.extensions.parent/</relativePath>
   </parent>
-  <version>1.7.0-SNAPSHOT</version>
 
    <dependencies>
     <dependency>

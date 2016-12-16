@@ -18,25 +18,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import core.io.exception.InvalidFileTypeException;
-import core.io.survey.attribut.ASurveyAttribute;
-import core.io.survey.attribut.value.AValue;
-import core.io.survey.attribut.value.RangeValue;
-import core.io.survey.attribut.value.UniqueValue;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+
+import core.metamodel.pop.APopulationAttribute;
+import core.metamodel.pop.APopulationEntity;
+import core.metamodel.pop.APopulationValue;
 import core.util.data.GSEnumDataType;
-import gospl.algo.IDistributionInferenceAlgo;
+import gospl.GosplPopulation;
+import gospl.algo.ISyntheticReconstructionAlgo;
 import gospl.algo.IndependantHypothesisAlgo;
-import gospl.algo.sampler.GosplBasicSampler;
+import gospl.algo.sampler.IDistributionSampler;
 import gospl.algo.sampler.ISampler;
-import gospl.distribution.GosplDistributionFactory;
+import gospl.algo.sampler.sr.GosplBasicSampler;
+import gospl.distribution.GosplDistributionBuilder;
 import gospl.distribution.exception.IllegalControlTotalException;
 import gospl.distribution.exception.IllegalDistributionCreation;
 import gospl.distribution.matrix.INDimensionalMatrix;
 import gospl.distribution.matrix.coordinate.ACoordinate;
+import gospl.entity.attribute.value.RangeValue;
+import gospl.entity.attribute.value.UniqueValue;
 import gospl.generator.DistributionBasedGenerator;
 import gospl.generator.ISyntheticGosplPopGenerator;
-import gospl.metamodel.GosplEntity;
-import gospl.metamodel.GosplPopulation;
+import gospl.io.exception.InvalidSurveyFormatException;
 import msi.gama.common.interfaces.ICreateDelegate;
 import msi.gama.runtime.IScope;
 import msi.gama.util.file.GamaXMLFile;
@@ -75,10 +78,10 @@ public class GenstarCreateDelegate implements ICreateDelegate {
 		GosplPopulation population = null;
 
 		// INSTANCIATE FACTORY
-		GosplDistributionFactory df = null;
+		GosplDistributionBuilder df = null;
 
 		try {
-			df = new GosplDistributionFactory(confFile);
+			df = new GosplDistributionBuilder(confFile);
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -86,22 +89,25 @@ public class GenstarCreateDelegate implements ICreateDelegate {
 		// RETRIEV INFORMATION FROM DATA IN FORM OF A SET OF JOINT DISTRIBUTIONS
 		try {
 			df.buildDistributions();
-		} catch (final RuntimeException | IOException | InvalidFileTypeException e) {
-			e.printStackTrace();
+		} catch (InvalidFormatException | IOException | InvalidSurveyFormatException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		}
+		
 		// TRANSPOSE SAMPLES INTO IPOPULATION
 		// TODO: yet to be tested
 		try {
 			df.buildSamples();
-		} catch (final RuntimeException | IOException | InvalidFileTypeException e) {
-			e.printStackTrace();
+		} catch (InvalidFormatException | IOException | InvalidSurveyFormatException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		}
-
+		
 		// HERE IS A CHOICE TO MAKE BASED ON THE TYPE OF GENERATOR WE WANT:
 		// Choice is made here to use distribution based generator
 
 		// so we collapse all distribution build from the data
-		INDimensionalMatrix<ASurveyAttribute, AValue, Double> distribution = null;
+		INDimensionalMatrix<APopulationAttribute, APopulationValue, Double> distribution = null;
 		try {
 			distribution = df.collapseDistributions();
 		} catch (final IllegalDistributionCreation | IllegalControlTotalException e1) {
@@ -109,11 +115,10 @@ public class GenstarCreateDelegate implements ICreateDelegate {
 		}
 
 		// BUILD THE SAMPLER WITH THE INFERENCE ALGORITHM
-		final IDistributionInferenceAlgo<ASurveyAttribute, AValue> distributionInfAlgo =
-				new IndependantHypothesisAlgo(true);
-		ISampler<ACoordinate<ASurveyAttribute, AValue>> sampler = null;
+		final ISyntheticReconstructionAlgo<IDistributionSampler> distributionInfAlgo = new IndependantHypothesisAlgo();
+		ISampler<ACoordinate<APopulationAttribute, APopulationValue>> sampler = null;
 		try {
-			sampler = distributionInfAlgo.inferDistributionSampler(distribution, new GosplBasicSampler());
+			sampler = distributionInfAlgo.inferSRSampler(distribution, new GosplBasicSampler());
 		} catch (final IllegalDistributionCreation e1) {
 			e1.printStackTrace();
 		}
@@ -128,12 +133,12 @@ public class GenstarCreateDelegate implements ICreateDelegate {
 			e.printStackTrace();
 		}
 
-		final Collection<ASurveyAttribute> attributes = population.getPopulationAttributes();
+		final Collection<APopulationAttribute> attributes = population.getPopulationAttributes();
 		double index = 0;
-		for (final GosplEntity e : population) {
+		for (final APopulationEntity e : population) {
 			scope.getGui().getStatus().setSubStatusCompletion(index++ / targetPopulation);
 			final Map<String, Object> agent = new HashMap<String, Object>();
-			for (final ASurveyAttribute attribute : attributes) {
+			for (final APopulationAttribute attribute : attributes) {
 				final String name = attribute.getAttributeName();
 				agent.put(name, getAttributeValue(scope, e, attribute));
 			}
@@ -146,9 +151,9 @@ public class GenstarCreateDelegate implements ICreateDelegate {
 
 	}
 
-	private Object getAttributeValue(final IScope scope, final GosplEntity entity, final ASurveyAttribute attribute) {
+	private Object getAttributeValue(final IScope scope, final APopulationEntity entity, final APopulationAttribute attribute) {
 		final IType<?> type = getAttributeType(attribute);
-		final AValue value = entity.getValueForAttribute(attribute);
+		final APopulationValue value = entity.getValueForAttribute(attribute);
 		if (value instanceof UniqueValue) {
 			return type.cast(scope, value.getStringValue(), null, false);
 		} else if (value instanceof RangeValue) {
@@ -175,7 +180,7 @@ public class GenstarCreateDelegate implements ICreateDelegate {
 		}
 	}
 
-	private IType<?> getAttributeType(final ASurveyAttribute attribute) {
+	private IType<?> getAttributeType(final APopulationAttribute attribute) {
 		final GSEnumDataType gsType = attribute.getDataType();
 		switch (gsType) {
 			case Boolean:

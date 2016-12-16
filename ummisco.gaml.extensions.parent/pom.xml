@@ -44,7 +44,7 @@
 		<repository>
 			<id>gama</id>
 			<name>GAMA Snapshots</name>
-			<url>gama.unthinkingdepths.fr</url>
+			<url>http://gama.unthinkingdepths.fr</url>
 			<layout>p2</layout>
 			<releases>
 				<enabled>true</enabled>
