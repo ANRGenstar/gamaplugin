@@ -7,7 +7,9 @@
  * 
  *
  **********************************************************************************************/
-package ummisco.gaml.extensions.genstar;
+package genstar.plugin;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,12 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-
 import core.metamodel.pop.APopulationAttribute;
 import core.metamodel.pop.APopulationEntity;
 import core.metamodel.pop.APopulationValue;
 import core.util.data.GSEnumDataType;
+
 import gospl.GosplPopulation;
 import gospl.algo.ISyntheticReconstructionAlgo;
 import gospl.algo.IndependantHypothesisAlgo;
@@ -40,6 +41,8 @@ import gospl.entity.attribute.value.UniqueValue;
 import gospl.generator.DistributionBasedGenerator;
 import gospl.generator.ISyntheticGosplPopGenerator;
 import gospl.io.exception.InvalidSurveyFormatException;
+import msi.gama.common.interfaces.ICreateDelegate;
+
 import msi.gama.common.interfaces.ICreateDelegate;
 import msi.gama.runtime.IScope;
 import msi.gama.util.file.GamaXMLFile;
@@ -93,7 +96,7 @@ public class GenstarCreateDelegate implements ICreateDelegate {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		
+
 		// TRANSPOSE SAMPLES INTO IPOPULATION
 		// TODO: yet to be tested
 		try {
@@ -102,7 +105,7 @@ public class GenstarCreateDelegate implements ICreateDelegate {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		
+
 		// HERE IS A CHOICE TO MAKE BASED ON THE TYPE OF GENERATOR WE WANT:
 		// Choice is made here to use distribution based generator
 
