@@ -1,0 +1,10 @@
+
+apply plugin: 'com.diffplug.gradle.p2.asmaven'
+p2AsMaven {
+
+    group 'p2', {
+        repo 'http://gama.unthinkingdepths.fr/'
+        iu 'msi.gama.core'
+    }
+
+}

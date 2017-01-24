@@ -1,0 +1,27 @@
+dependencies {
+    compile 'p2:ummisco.gama.annotations:+'
+    compile 'p2:msi.gama.core:+'
+    compile 'org.genstar:genstar-core:1.0'
+    compile 'org.genstar:genstar-spll:1.0'
+    compile 'org.genstar:genstar-spin:1.0'
+    compile 'org.genstar:genstar-gospl:1.0'
+}
+
+apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
+osgiBndManifest {
+    copyTo 'META-INF/MANIFEST.MF'
+}
+
+// configure the OSGi bundle
+jar.manifest.attributes(
+        '-exportcontents': 'core.*, gospl.*, spin.*, spll.*',
+        '-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
+        '-conditionalpackage': '!org.w3c.*, !org.xml.*, !javax.*, *',
+        'Import-Package': '!org.w3c.*, !org.xml.*, !javax.*,*',
+        'Bundle-Version': '1.0.0.${tstamp}',
+        'Bundle-SymbolicName': project.name,
+        'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
+        'Require-Capability': 'osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"',
+        'Bundle-Vendor': 'Gama team',
+        'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0"
+)

@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: genstar.plugin.bundle-all
+Bundle-Vendor: Gama team
+Bundle-Version: 1.0.0.201701232139
+Import-Package: core.metamodel.pop;version="[1.0,2)",core.util.data;vers
+ ion="[1.0,2)",gospl;version="[1.0,2)",gospl.algo;version="[1.0,2)",gosp
+ l.algo.sampler;version="[1.0,2)",gospl.algo.sampler.sr;version="[1.0,2)
+ ",gospl.distribution;version="[1.0,2)",gospl.distribution.exception;ver
+ sion="[1.0,2)",gospl.distribution.matrix;version="[1.0,2)",gospl.entity
+ .attribute.value;version="[1.0,2)",gospl.generator;version="[1.0,2)",go
+ spl.io.exception;version="[1.0,2)",msi.gama.common.interfaces,msi.gama.
+ common.util,msi.gama.runtime,msi.gama.util.file,msi.gaml.operators,msi.
+ gaml.statements,msi.gaml.types,org.apache.poi.openxml4j.exceptions

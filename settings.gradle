@@ -1,0 +1,4 @@
+include 'genstar.plugin.bundle-all'
+
+include 'target.p2'
+include 'target.maven'

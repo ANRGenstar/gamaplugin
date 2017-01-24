@@ -1,61 +1,28 @@
-plugins {
-    id 'com.diffplug.gradle.p2.asmaven' version '3.7.0'
-}
 
-
-apply plugin: 'java'
-
-// The dependencies we'd like to pull from Eclipse's p2 repositories
-def eclipseDeps = [
-        // The dependencies we actually use
-        'org.eclipse.jdt.core',
-        'org.eclipse.text',
-
-        // Their transitives
-        'org.eclipse.core.contenttype',
-        'org.eclipse.core.jobs',
-        'org.eclipse.core.runtime',
-        'org.eclipse.core.resources',
-        'org.eclipse.equinox.common',
-        'org.eclipse.equinox.preferences',
-        'org.eclipse.osgi'
-]
-// build a maven repo in our build folder containing these artifacts
-p2AsMaven {
-
-    group 'p2', {
-        repo 'http://gama.unthinkingdepths.fr/'
-        iu 'msi.gama.core'
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
-
+    // make sure we don't cache stale snapshot versions
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+    dependencies {
+        classpath "org.standardout:bnd-platform:1.5.0"
+        classpath "com.diffplug.gradle:goomph:3.7.0"
+    }
 }
 
+///////////
+// MAVEN //
+///////////
 repositories {
-
-    maven { url 'http://maven.geotoolkit.org' }
-    maven { url 'https://mvnrepository.com/'}
-    maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    maven { url 'http://dl.bintray.com/anrgenstar/genstar-packages'}
-    maven { url  'http://download.osgeo.org/webdav/geotools/'}
-    maven { url 'http://repo.boundlessgeo.com/main/' }
     mavenCentral()
-
 }
-
-dependencies {
-
-    compile 'p2:ummisco.gama.annotations:+'
-    compile 'p2:msi.gama.core:+'
-    compile 'org.genstar:genstar-core:1.0'
-    compile 'org.genstar:genstar-spll:1.0'
-    compile 'org.genstar:genstar-spin:1.0'
-    compile 'org.genstar:genstar-gospl:1.0'
-
-}
-
 subprojects {
     repositories {
-        mavenCentral()
         // SNAPSHOT versions are free to rely on other SNAPSHOT libraries
         if (project.version.endsWith('SNAPSHOT')) {
             maven {
@@ -66,7 +33,74 @@ subprojects {
         maven {
             url rootProject.file('target.p2/build/p2asmaven/maven')
         }
+
+        maven { url 'http://maven.geotoolkit.org' }
+        maven { url 'https://mvnrepository.com/'}
+        maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url 'http://dl.bintray.com/anrgenstar/genstar-packages'}
+        maven { url 'http://download.osgeo.org/webdav/geotools/'}
+        maven { url 'http://repo.boundlessgeo.com/main/' }
+        mavenCentral()
+
     }
+}
+
+
+
+
+/////////////
+// PLUGINS //
+/////////////
+// tasks to clean and jar all of the plugins
+Closure IS_PLUGIN = { it.name.startsWith('genstar.plugin') }
+configure(subprojects.findAll(IS_PLUGIN)) {
+    // we need the maven repo from p2
+    evaluationDependsOn(':target.p2')
+
+    def PROJECT_NAME = it.name
+
+    //////////
+    // JAVA //
+    //////////
+    apply plugin: 'java'
+    sourceSets {
+        main { java {
+            srcDir 'src'
+        } }
+        test { java {
+            srcDir 'test'
+        } }
+    }
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+
+
+    //////////////////////
+    // ECLIPSE PROJECTS //
+    //////////////////////
+    apply plugin: 'eclipse'
+    // remove the build folder
+    apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+    // improve the project deps
+    apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
+    // handle build.properties correctly
+    apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
+
+    eclipse {
+        project {
+            natures 'org.eclipse.pde.PluginNature'
+            natures 'org.eclipse.jdt.core.javanature'
+
+            buildCommand 'org.eclipse.jdt.core.javabuilder'
+            buildCommand 'org.eclipse.pde.ManifestBuilder'
+            buildCommand 'org.eclipse.pde.SchemaBuilder'
+        }
+        classpath {
+            downloadSources true
+            downloadJavadoc true
+        }
+}
 
 
 }
