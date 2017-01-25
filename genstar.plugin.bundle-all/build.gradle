@@ -1,10 +1,59 @@
+
+evaluationDependsOn(':target.p2')
+
+//////////
+// JAVA //
+//////////
+apply plugin: 'java'
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+    test {
+        java {
+            srcDir 'test'
+        }
+    }
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+apply plugin: 'com.diffplug.gradle.p2.asmaven'
+
 dependencies {
-    compile 'p2:ummisco.gama.annotations:+'
-    compile 'p2:msi.gama.core:+'
-    compile 'org.genstar:genstar-core:1.0'
-    compile 'org.genstar:genstar-spll:1.0'
-    compile 'org.genstar:genstar-spin:1.0'
-    compile 'org.genstar:genstar-gospl:1.0'
+    compile('p2:ummisco.gama.annotations:+')
+    compile('p2:msi.gama.core:+')
+    compile('org.genstar:genstar-core:1.0')
+    compile('org.genstar:genstar-spll:1.0')
+    compile('org.genstar:genstar-spin:1.0')
+    compile('org.genstar:genstar-gospl:1.0')
+}
+//////////////////////
+// ECLIPSE PROJECTS //
+//////////////////////
+apply plugin: 'eclipse'
+// remove the build folder
+apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+// improve the project deps
+apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
+// handle build.properties correctly
+apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
+
+eclipse {
+    project {
+        natures 'org.eclipse.pde.PluginNature'
+        natures 'org.eclipse.jdt.core.javanature'
+
+        buildCommand 'org.eclipse.jdt.core.javabuilder'
+        buildCommand 'org.eclipse.pde.ManifestBuilder'
+        buildCommand 'org.eclipse.pde.SchemaBuilder'
+    }
+    classpath {
+        downloadSources true
+        downloadJavadoc true
+    }
 }
 
 apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
@@ -16,8 +65,8 @@ osgiBndManifest {
 jar.manifest.attributes(
         '-exportcontents': 'core.*, gospl.*, spin.*, spll.*',
         '-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
-        '-conditionalpackage': '!org.w3c.*, !org.xml.*, !javax.*, *',
-        'Import-Package': '!org.w3c.*, !org.xml.*, !javax.*,*',
+        'Conditional-Package': '!org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !org.graphstream.*, *',
+        'Import-Package': '!*',
         'Bundle-Version': '1.0.0.${tstamp}',
         'Bundle-SymbolicName': project.name,
         'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',

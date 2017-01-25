@@ -15,9 +15,6 @@ buildscript {
     }
 }
 
-///////////
-// MAVEN //
-///////////
 repositories {
     mavenCentral()
 }
@@ -47,60 +44,3 @@ subprojects {
 
 
 
-
-/////////////
-// PLUGINS //
-/////////////
-// tasks to clean and jar all of the plugins
-Closure IS_PLUGIN = { it.name.startsWith('genstar.plugin') }
-configure(subprojects.findAll(IS_PLUGIN)) {
-    // we need the maven repo from p2
-    evaluationDependsOn(':target.p2')
-
-    def PROJECT_NAME = it.name
-
-    //////////
-    // JAVA //
-    //////////
-    apply plugin: 'java'
-    sourceSets {
-        main { java {
-            srcDir 'src'
-        } }
-        test { java {
-            srcDir 'test'
-        } }
-    }
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-
-
-    //////////////////////
-    // ECLIPSE PROJECTS //
-    //////////////////////
-    apply plugin: 'eclipse'
-    // remove the build folder
-    apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
-    // improve the project deps
-    apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
-    // handle build.properties correctly
-    apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
-
-    eclipse {
-        project {
-            natures 'org.eclipse.pde.PluginNature'
-            natures 'org.eclipse.jdt.core.javanature'
-
-            buildCommand 'org.eclipse.jdt.core.javabuilder'
-            buildCommand 'org.eclipse.pde.ManifestBuilder'
-            buildCommand 'org.eclipse.pde.SchemaBuilder'
-        }
-        classpath {
-            downloadSources true
-            downloadJavadoc true
-        }
-}
-
-
-}

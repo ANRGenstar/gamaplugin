@@ -5,7 +5,7 @@
 // find the paths of all actual projects
 def pluginPaths = rootProject.subprojects
         .collect { ':' + it.name }
-        .grep { it.startsWith(':genstar.plugin.') }
+        .grep { it.startsWith(':genstar.plugin') }
 
 // the target platform will contain every jar
 // which is added to the platform config, as
@@ -13,10 +13,12 @@ def pluginPaths = rootProject.subprojects
 // metadata created automatically by bnd as
 // required.
 configurations {
-    platform
+    platform {
     // no need to add the plugins from p2
     all*.exclude group: 'eclipse-deps'
+    }
 }
+
 for (pluginPath in pluginPaths) {
     evaluationDependsOn(pluginPath)
     dependencies.add('platform', project(pluginPath))
@@ -25,10 +27,11 @@ for (pluginPath in pluginPaths) {
 // Download from eclipse and put it into maven
 apply plugin: 'org.standardout.bnd-platform'
 platform {
+    eclipseMirror.linux.gtk.x86_64 = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
     determineImportVersions = true
-    importVersionStrategy = MAJOR
     useBndHashQualifiers = false
     fetchSources = false
+    importVersionStrategy = MAJOR
 }
 // don't let stale bundles lay around
 bundles.dependsOn(clean)

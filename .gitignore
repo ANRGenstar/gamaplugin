@@ -15,7 +15,7 @@ project/plugins/project/
 
 # gradle specific 
 
-build/*
+*/build/*
 .gradle/*
 .gradletasknamecache
 
