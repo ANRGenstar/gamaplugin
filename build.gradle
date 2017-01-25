@@ -10,6 +10,7 @@ buildscript {
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
     dependencies {
+        classpath 'org.hidetake:gradle-ssh-plugin:2.7.2'
         classpath "org.standardout:bnd-platform:1.5.0"
         classpath "com.diffplug.gradle:goomph:3.7.0"
     }

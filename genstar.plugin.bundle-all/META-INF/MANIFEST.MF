@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: genstar.plugin.bundle-all
 Bundle-Vendor: Gama team
-Bundle-Version: 1.0.0.201701251055
+Bundle-Version: 1.0.0.201701251510
 Conditional-Package: !org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !or
  g.graphstream.*, *
 Export-Package: core.configuration;version="1.0.0";uses:="core.metamodel

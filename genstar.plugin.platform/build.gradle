@@ -11,24 +11,40 @@ configurations {
 }
 */
 
-//configurations {
-//    platformaux
-//}
-//
+configurations {
+    platformaux
+}
+
 //dependencies {
 //    platformaux project(':genstar.plugin.bundle-all')
 //}
-//
-//apply plugin: 'org.standardout.bnd-platform'
-
 
 apply plugin: 'org.standardout.bnd-platform'
 
 platform {
-    bundle file("/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.bundle-all/build/libs/genstar.plugin.bundle-all.jar")
+    bundle file('../genstar.plugin.bundle-all/build/libs/genstar.plugin.bundle-all.jar')
     eclipseMirror.linux.gtk.x86_64 = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
     determineImportVersions = true
     useBndHashQualifiers = false
     fetchSources = false
     importVersionStrategy = MAJOR
+}
+
+apply plugin: 'org.hidetake.ssh'
+
+    remotes {
+        webserver {
+            host = 'web504.webfaction.com'
+            user = 'reyman64'
+            identity = new File('/home/reyman/.ssh/id_rsa.1')
+        }
+    }
+
+task deploy << {
+    ssh.run {
+        session(remotes.webserver){
+            execute 'cd /home/reyman64/webapps/genstarp2/ ; rm -rf *'
+            new File('build/updatesite/').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
+        }
+    }
 }
