@@ -14,7 +14,10 @@ project/boot/
 project/plugins/project/
 
 # gradle specific 
-
+genstar.plugin.bundle-all/build/
+genstar.plugin.platform/build/
+target.maven/build/
+target.p2/build/
 build/
 .gradle/*
 .gradletasknamecache
