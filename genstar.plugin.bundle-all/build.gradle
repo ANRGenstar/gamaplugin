@@ -20,6 +20,15 @@ sourceSets {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/resources'
+            srcDir 'src/main/java/'
+        }
+    }
+}
+
 apply plugin: 'com.diffplug.gradle.p2.asmaven'
 
 dependencies {

@@ -7,7 +7,7 @@ Install [gradle 3.3](https://docs.gradle.org/current/userguide/installation.html
 
 ## How to IDE ?
 
-- If you use eclipse, you need to run 'gradle eclipse' in root folder before importing project to generate good classpath, etc. needed by eclipse.
+- If you use eclipse, you need to run 'gradle cleanEclipse eclipse' in root folder before importing project to generate good classpath, etc. needed by eclipse.
 - If you use intellij IDEA, nothing to do, only import project.
 
 ## How to compile with gradle ?
