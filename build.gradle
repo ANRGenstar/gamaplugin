@@ -1,4 +1,6 @@
 
+apply plugin: 'eclipse'
+
 buildscript {
     repositories {
         maven {

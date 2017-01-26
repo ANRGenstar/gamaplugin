@@ -5,17 +5,22 @@ This repository contains all feature that connect Gen* api to the Gama platform
 
 Install [gradle 3.3](https://docs.gradle.org/current/userguide/installation.html) on your computer, or use directly the gradle eclipse or intelij plugin.
 
-## How to compile 
+## How to IDE ?
+
+- If you use eclipse, you need to run 'gradle eclipse' in root folder before importing project to generate good classpath, etc. needed by eclipse.
+- If you use intellij IDEA, nothing to do, only import project.
+
+## How to compile with gradle ?
 
 Into root folder run the command `gradle clean build`
 
-## How to produce p2site
+## How to produce p2 repository site ?
 
-Go to `/genstar.plugin.platform/` path and run the command `gradle updateSite`
+Go to `/genstar.plugin.platform/` path and run the command `gradle updatesite`
 
-## How to deploy
+## How to deploy ?
 
-Add your correct credential into `/genstar.plugin.platform/gradle-local.properties` like this
+Add your correct credential (contact a team member) into `/genstar.plugin.platform/gradle-local.properties` like this
 
 ``` 
 genstarPassword=mycorrectcredential
