@@ -35,8 +35,8 @@ apply plugin: 'org.hidetake.ssh'
     remotes {
         webserver {
             host = 'web504.webfaction.com'
-            user = 'reyman64'
-            identity = new File('/home/reyman/.ssh/id_rsa.1')
+            user = 'genstarpws'
+            password = '$genstarPassword'
         }
     }
 
