@@ -36,7 +36,7 @@ apply plugin: 'org.hidetake.ssh'
         webserver {
             host = 'web504.webfaction.com'
             user = 'genstarpws'
-            password = '${genstarPassword}'
+            password = '$genstarPassword'
         }
     }
 
