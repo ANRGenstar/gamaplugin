@@ -34,9 +34,11 @@ apply plugin: 'org.hidetake.ssh'
 
     remotes {
         webserver {
+            fileTransfer = 'sftp'
             host = 'web504.webfaction.com'
             user = 'genstarpws'
-            password = '$genstarPassword'
+            password = GENSTAR_PASSWORD
+            knownHosts = allowAnyHosts
         }
     }
 
