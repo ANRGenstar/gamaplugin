@@ -38,6 +38,7 @@ dependencies {
     compile('org.genstar:genstar-spll:1.0')
     compile('org.genstar:genstar-spin:1.0')
     compile('org.genstar:genstar-gospl:1.0')
+    compile('net.sf.trove4j:trove4j:3.0.1')
 }
 //////////////////////
 // ECLIPSE PROJECTS //

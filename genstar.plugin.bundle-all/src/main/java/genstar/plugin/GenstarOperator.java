@@ -32,7 +32,7 @@ import core.util.data.GSEnumDataType;
 import core.util.excpetion.GSIllegalRangedData;
 import gospl.GosplPopulation;
 import gospl.algo.ISyntheticReconstructionAlgo;
-import gospl.algo.IndependantHypothesisAlgo;
+import gospl.algo.is.IndependantHypothesisAlgo;
 import gospl.algo.generator.DistributionBasedGenerator;
 import gospl.algo.generator.ISyntheticGosplPopGenerator;
 import gospl.algo.sampler.IDistributionSampler;
