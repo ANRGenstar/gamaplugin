@@ -77,7 +77,7 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
         List<APopulationEntity> es = new ArrayList(population);
         if (number > 0 && number < es.size()) es = scope.getRandom().shuffle(es);
         for (final APopulationEntity e : es) { 	
-        	final Map map = GamaMapFactory.create();
+        	final Map map = (Map) GamaMapFactory.create();
         	if (population instanceof SpllPopulation) {
         		if (e.getLocation() == null) continue;
         		map.put(IKeyword.SHAPE, new GamaShape(gen.getCrs() != null ? Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(e.getLocation()), gen.getCrs()): Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(e.getLocation()))));

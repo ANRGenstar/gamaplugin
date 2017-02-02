@@ -254,6 +254,7 @@ public class GamaPopGenerator implements IValue {
 		return f;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@getter("mappers")
 	public GamaMap getMappers(){
 		GamaMap<String, String> lm =GamaMapFactory.create(Types.STRING, Types.STRING);
