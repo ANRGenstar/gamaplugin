@@ -1,6 +1,18 @@
 # gamaplugin
 This repository contains all feature that connect Gen* api to the Gama platform 
 
+# Information about infrastructure of plugin 
+
+- `/build.gradle` : Define the maven dependencies site and the dependencies needed to merge the p2/maven repository  (__goomph__) and build the p2 site (__bnd-platform__). 
+
+- `genstar.plugin.bundle-all/build.gradle` : Compile sources from plugin, generate gaml primitive, and create an osgi bundle of genstar plugin : `genstar.plugin.bundle-all`.
+
+- `genstar.plugin.platform/build.gradle` : Create the p2 site for the genstar-plugin bundle.
+
+- `target.p2/build.gradle` : Define repository for p2 dependencies
+
+- `target.maven/build.gradle` : Converts maven dependencies into OSGi bundles
+
 # Prerequisites
 
 Install [gradle 3.3](https://docs.gradle.org/current/userguide/installation.html) on your computer, or use directly the gradle eclipse or intelij plugin.
