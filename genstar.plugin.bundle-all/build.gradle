@@ -32,6 +32,7 @@ sourceSets {
 apply plugin: 'com.diffplug.gradle.p2.asmaven'
 
 dependencies {
+    compileClasspath('p2:msi.gama.processor:+')
     compile('p2:ummisco.gama.annotations:+')
     compile('p2:msi.gama.core:+')
     compile('org.genstar:genstar-core:1.0')

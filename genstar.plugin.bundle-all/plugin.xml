@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="gaml.extension">
+   </extension>
+   <extension
+         point="gama.create">
+      <implementation
+            class="idees.gama.genstar.CreateFromGenstarDelegate"
+            description="Create Genstar population">
+      </implementation>
+   </extension>
+
+</plugin>
