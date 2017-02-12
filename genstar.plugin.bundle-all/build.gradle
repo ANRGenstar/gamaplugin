@@ -74,7 +74,7 @@ osgiBndManifest {
 
 // configure the OSGi bundle
 jar.manifest.attributes(
-        '-exportcontents': 'core.*, gospl.*, spin.*, spll.*',
+        '-exportcontents': 'core.*, gospl.*, spin.*, spll.*, gaml.*',
         '-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
         'Conditional-Package': '!org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !org.graphstream.*, *',
         'Import-Package': '!*',

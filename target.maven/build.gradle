@@ -25,14 +25,14 @@ for (pluginPath in pluginPaths) {
 }
 
 // Download from eclipse and put it into maven
-//apply plugin: 'org.standardout.bnd-platform'
-//platform {
-//    eclipseMirror.linux.gtk.x86_64 = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
-//    determineImportVersions = true
-//    useBndHashQualifiers = false
-//    fetchSources = false
-//    importVersionStrategy = MAJOR
-//}
+apply plugin: 'org.standardout.bnd-platform'
+platform {
+    eclipseMirror.linux.gtk.x86_64 = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
+    determineImportVersions = true
+    useBndHashQualifiers = false
+    fetchSources = false
+    importVersionStrategy = MAJOR
+}
 // don't let stale bundles lay around
 
 bundles.dependsOn(clean)
