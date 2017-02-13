@@ -39,11 +39,11 @@ genstarPassword=mycorrectcredential
 ```
 
 - In terminal, or directly in your IDE, run the `gradle deploy` command into the `/genstar.plugin.platform/` folder. 
-- The p2 site created in the previous section is updated with ssh to __http:genstar.unthinkingdepths.fr__
+- The p2 site created in the previous section is updated with ssh to __http://genstar.unthinkingdepths.fr__
  
 ## Into Gama
 
 Download and run the release or the latest version of Gama simulation software directly on [github](https://github.com/gama-platform/gama/releases) 
 
-- Go to `help > install new software` and add the repository __http:genstar.unthinkingdepths.fr__.
+- Go to `help > install new software` and add the repository __http://genstar.unthinkingdepths.fr__.
 - Install the feature proposed. 
