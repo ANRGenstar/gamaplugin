@@ -8,7 +8,7 @@
  * 
  *
  **********************************************************************************************/
-package genstar.plugin;
+package gamaplugin;
 
 import java.util.ArrayList;
 import java.util.Collection;

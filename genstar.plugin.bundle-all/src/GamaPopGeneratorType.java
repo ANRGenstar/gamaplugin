@@ -8,7 +8,7 @@
  * 
  *
  **********************************************************************************************/
-package genstar.plugin;
+package gamaplugin;
 
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.type;

@@ -6,27 +6,23 @@ evaluationDependsOn(':target.p2')
 //////////
 apply plugin: 'java'
 sourceSets {
-    main {
-        java {
-            srcDir 'src'
-        }
+  main{
+    java{
+      srcDir 'src'
+      srcDir 'test'
     }
-    test {
-        java {
-            srcDir 'test'
-        }
-    }
+  }
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 sourceSets {
-    main {
-        java {
-            srcDir 'src/main/resources'
-            srcDir 'src/main/java/'
-        }
+  main{
+    java{
+      srcDir 'resources'
+      srcDir 'src'
     }
+  }
 }
 
 apply plugin: 'com.diffplug.gradle.p2.asmaven'

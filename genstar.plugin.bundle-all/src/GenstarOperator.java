@@ -1,4 +1,4 @@
-package genstar.plugin;
+package gamaplugin;
 
 import java.io.File;
 import java.io.IOException;
