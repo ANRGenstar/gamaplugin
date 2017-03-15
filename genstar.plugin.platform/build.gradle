@@ -42,11 +42,13 @@ apply plugin: 'org.hidetake.ssh'
         }
     }
 
-task deploy << {
-    ssh.run {
-        session(remotes.webserver){
-            execute 'cd /home/reyman64/webapps/genstarp2/ ; rm -rf *'
-            new File('build/updatesite/').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
+task deploy {
+    doLast {
+        ssh.run {
+            session(remotes.webserver){
+                execute 'cd /home/reyman64/webapps/genstarp2/ ; rm -rf *'
+                new File('build/updatesite/').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
+            }
         }
     }
 }
