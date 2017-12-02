@@ -11,6 +11,8 @@ configurations {
 }
 */
 
+// BND PLUGIN
+
 configurations {
     platformaux
 }
@@ -18,6 +20,7 @@ configurations {
 //dependencies {
 //    platformaux project(':genstar.plugin.bundle-all')
 //}
+
 
 apply plugin: 'org.standardout.bnd-platform'
 
@@ -35,7 +38,7 @@ apply plugin: 'org.hidetake.ssh'
     remotes {
         webserver {
             fileTransfer = 'sftp'
-            host = 'web504.webfaction.com'
+            host = 'web564.webfaction.com'
             user = 'genstarpws'
             password = {$GENSTAR_PASSWORD}
             knownHosts = allowAnyHosts

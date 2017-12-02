@@ -1,48 +1,53 @@
 
 apply plugin: 'eclipse'
 
+//All dependencies needed to compile the project are defined here, at root level
+
 buildscript {
     repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        maven { url "https://plugins.gradle.org/m2/"}
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
+
     // make sure we don't cache stale snapshot versions
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
+
     dependencies {
         classpath 'org.hidetake:gradle-ssh-plugin:2.7.2'
-        classpath "org.standardout:bnd-platform:1.5.0"
-        classpath "com.diffplug.gradle:goomph:3.7.0"
+        classpath "org.standardout:bnd-platform:1.6.0-SNAPSHOT"
+        classpath "com.diffplug.gradle:goomph:3.8.1"
     }
 }
 
 repositories {
     mavenCentral()
 }
-subprojects {
-    repositories {
-        // SNAPSHOT versions are free to rely on other SNAPSHOT libraries
-        if (project.version.endsWith('SNAPSHOT')) {
-            maven {
-                url 'https://oss.sonatype.org/content/repositories/snapshots/'
+
+    subprojects {
+        repositories {
+            // SNAPSHOT versions are free to rely on other SNAPSHOT libraries
+            if (project.version.endsWith('SNAPSHOT')) {
+                maven {
+                    url 'https://oss.sonatype.org/content/repositories/snapshots/'
+                }
             }
-        }
-        // local eclipse maven (created by Goomph)
-        maven {
-            url rootProject.file('target.p2/build/p2asmaven/maven')
-        }
+            // local eclipse maven (created by Goomph)
+            maven {
+                url rootProject.file('target.p2/build/p2asmaven/maven')
+            }
 
-        maven { url 'http://maven.geotoolkit.org' }
-        maven { url 'https://mvnrepository.com/'}
-        maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        maven { url 'http://dl.bintray.com/anrgenstar/genstar-packages'}
-        maven { url 'http://download.osgeo.org/webdav/geotools/'}
-        maven { url 'http://repo.boundlessgeo.com/main/' }
-        mavenCentral()
+            maven { url 'http://maven.nuiton.org/release'}
+            maven { url 'http://maven.geotoolkit.org' }
+            maven { url 'https://mvnrepository.com/'}
+            maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+            maven { url 'http://dl.bintray.com/anrgenstar/genstar-packages'}
+            maven { url 'http://download.osgeo.org/webdav/geotools/'}
+            maven { url 'http://repo.boundlessgeo.com/main/' }
+            mavenCentral()
 
-    }
+        }
 }
 
 
