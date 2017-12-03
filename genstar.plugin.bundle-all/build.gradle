@@ -43,12 +43,12 @@ dependencies {
 
 // Generate eclipse configuration
 apply plugin: 'eclipse'
+
 // remove the build folder
-apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+//apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+
 // improve the project deps
 apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
-// handle build.properties correctly
-apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
 
 eclipse {
     project {
@@ -70,13 +70,16 @@ eclipse {
 // PLUGIN GOOMPH  //
 ////////////////////
 
+// handle build.properties correctly
+apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
+
 apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
 
 // configure the OSGi bundle
 jar.manifest.attributes(
         '-exportcontents': 'core.*, gospl.*, spin.*, spll.*, gaml.*, genstar.*',
         '-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
-        'Conditional-Package': '!org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !org.graphstream.*, *',
+        'Conditional-Package': '!org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !org.graphstream.*',
         'Import-Package': '!*',
         'Bundle-Version': '1.0.0.${tstamp}',
         'Bundle-SymbolicName': project.name,
