@@ -5,6 +5,7 @@ apply plugin: 'eclipse'
 
 buildscript {
     repositories {
+        mavenLocal()
         maven { url "https://plugins.gradle.org/m2/"}
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
@@ -16,8 +17,15 @@ buildscript {
 
     dependencies {
         classpath 'org.hidetake:gradle-ssh-plugin:2.7.2'
-        classpath "org.standardout:bnd-platform:1.6.0-SNAPSHOT"
-        classpath "com.diffplug.gradle:goomph:3.9.0-SNAPSHOT"
+        classpath "org.standardout:bnd-platform:1.5.0"
+        classpath "com.diffplug.gradle:goomph:3.7.0"
+    }
+}
+gradle.afterProject {project, projectState ->
+    if (projectState.failure) {
+        println "Evaluation of $project FAILED"
+    } else {
+        println "Evaluation of $project succeeded"
     }
 }
 
