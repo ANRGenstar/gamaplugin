@@ -1,4 +1,4 @@
-/*********************************************************************************************
+ /*********************************************************************************************
  *
  * 'GamaRegressionType.java, in plugin msi.gama.core, is part of the source code of the
  * GAMA modeling and simulation platform.
@@ -8,7 +8,8 @@
  * 
  *
  **********************************************************************************************/
-package gamaplugin;
+
+ package gama.genstar.plugin;
 
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.type;

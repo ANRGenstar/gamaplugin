@@ -8,7 +8,8 @@
  * 
  *
  **********************************************************************************************/
-package gamaplugin;
+
+package gama.genstar.plugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -31,25 +31,28 @@ dependencies {
     compileClasspath('p2:msi.gama.processor:+')
     compile('p2:ummisco.gama.annotations:+')
     compile('p2:msi.gama.core:+')
-    compile('org.genstar:genstar-core:1.0')
-    compile('org.genstar:genstar-spll:1.0')
-    compile('org.genstar:genstar-spin:1.0')
-    compile('org.genstar:genstar-gospl:1.0')
+    compile('org.genstar:genstar-core:1.0.3')
+    compile('org.genstar:genstar-spll:1.0.3')
+    compile('org.genstar:genstar-spin:1.0.3')
+    compile('org.genstar:genstar-gospl:1.0.3')
     compile('net.sf.trove4j:trove4j:3.0.1')
 }
 //////////////////////
 // ECLIPSE PROJECTS //
 //////////////////////
+
+// Generate eclipse configuration
 apply plugin: 'eclipse'
+
 // remove the build folder
-apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+//apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+
 // improve the project deps
 apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
-// handle build.properties correctly
-apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
 
 eclipse {
     project {
+        // Project natures allow a plug-in to tag a project as a specific kind of project
         natures 'org.eclipse.pde.PluginNature'
         natures 'org.eclipse.jdt.core.javanature'
 
@@ -63,16 +66,20 @@ eclipse {
     }
 }
 
+////////////////////
+// PLUGIN GOOMPH  //
+////////////////////
+
+// handle build.properties correctly
+apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
+
 apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
-osgiBndManifest {
-    copyTo 'META-INF/MANIFEST.MF'
-}
 
 // configure the OSGi bundle
 jar.manifest.attributes(
         '-exportcontents': 'core.*, gospl.*, spin.*, spll.*, gaml.*, genstar.*',
         '-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
-        'Conditional-Package': '!org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !org.graphstream.*, *',
+        'Conditional-Package': '!org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !org.graphstream.*',
         'Import-Package': '!*',
         'Bundle-Version': '1.0.0.${tstamp}',
         'Bundle-SymbolicName': project.name,
@@ -81,3 +88,8 @@ jar.manifest.attributes(
         'Bundle-Vendor': 'Gama team',
         'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0"
 )
+
+osgiBndManifest {
+    copyTo 'META-INF/MANIFEST.MF'
+}
+

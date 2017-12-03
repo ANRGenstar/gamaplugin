@@ -35,9 +35,10 @@ platform {
 }
 // don't let stale bundles lay around
 
-bundles.dependsOn(clean)
+//bundles.dependsOn(clean)
 // bundles relies on the underlying jars being built
 configurations.collectMany { it.allDependencies }.findAll { it instanceof ProjectDependency }.each {
+    print("dependencies : " + it)
     bundles.dependsOn(it.dependencyProject.path + ':jar')
 }
 

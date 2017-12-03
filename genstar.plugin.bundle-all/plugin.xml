@@ -7,7 +7,7 @@
    <extension
          point="gama.create">
       <implementation
-            class="idees.gama.genstar.CreateFromGenstarDelegate"
+            class=" gama.genstar.plugin.CreateFromGenstarDelegate"
             description="Create Genstar population">
       </implementation>
    </extension>

@@ -1,4 +1,4 @@
-package gamaplugin;
+package gama.genstar.plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,15 +31,15 @@ import core.metamodel.pop.io.GSSurveyWrapper;
 import core.util.data.GSEnumDataType;
 import core.util.excpetion.GSIllegalRangedData;
 import gospl.GosplPopulation;
-import gospl.algo.ISyntheticReconstructionAlgo;
-import gospl.algo.is.IndependantHypothesisAlgo;
-import gospl.algo.generator.DistributionBasedGenerator;
-import gospl.algo.generator.ISyntheticGosplPopGenerator;
-import gospl.algo.sampler.IDistributionSampler;
-import gospl.algo.sampler.ISampler;
-import gospl.algo.sampler.sr.GosplBasicSampler;
+import gospl.algo.sr.ISyntheticReconstructionAlgo;
+import gospl.algo.sr.is.IndependantHypothesisAlgo;
+import gospl.generator.DistributionBasedGenerator;
+import gospl.generator.ISyntheticGosplPopGenerator;
+import gospl.sampler.IDistributionSampler;
+import gospl.sampler.ISampler;
+import gospl.sampler.sr.GosplBasicSampler;
 import gospl.distribution.GosplContingencyTable;
-import gospl.distribution.GosplDistributionBuilder;
+import gospl.distribution.GosplInputDataManager;
 import gospl.distribution.exception.IllegalControlTotalException;
 import gospl.distribution.exception.IllegalDistributionCreation;
 import gospl.distribution.matrix.INDimensionalMatrix;
@@ -237,9 +237,9 @@ public class GenstarOperator {
 	
 		GenstarConfigurationFile confFile = null;
 		confFile = new GenstarConfigurationFile(gen.getInputFiles(), gen.getInputAttributes(), gen.getInputKeyMap());
-		
-       GosplDistributionBuilder gdb = null;
-       gdb = new GosplDistributionBuilder(confFile);
+
+		GosplInputDataManager gdb = null;
+       gdb = new GosplInputDataManager(confFile);
        IPopulation<APopulationEntity, APopulationAttribute, APopulationValue> population = new GosplPopulation();
        if ("simple_draw".equals(gen.getGenerationAlgorithm())) {
     	
@@ -267,7 +267,7 @@ public class GenstarOperator {
 	        
 	   } else if ("IS".equals(gen.getGenerationAlgorithm())) {
 		   try {
-			   gdb.buildDistributions();
+			   gdb.buildDataTables();
 			} catch (final RuntimeException e) {
 				e.printStackTrace();
 			} catch (final IOException e) {
@@ -280,7 +280,7 @@ public class GenstarOperator {
 
 			INDimensionalMatrix<APopulationAttribute, APopulationValue, Double> distribution = null;
 			try {
-				distribution = gdb.collapseDistributions();
+				distribution = gdb.collapseDataTablesIntoDistributions();
 			} catch (final IllegalDistributionCreation e1) {
 				e1.printStackTrace();
 			} catch (final IllegalControlTotalException e1) {
@@ -298,7 +298,7 @@ public class GenstarOperator {
 			
 			if (targetPopulation < 0) {
 				int min = Integer.MAX_VALUE;
-				for (INDimensionalMatrix<APopulationAttribute,APopulationValue,? extends Number> mat: gdb.getRawDistributions()) {
+				for (INDimensionalMatrix<APopulationAttribute,APopulationValue,? extends Number> mat: gdb.getRawDataTables()) {
 					if (mat instanceof GosplContingencyTable) {
 						GosplContingencyTable cmat = (GosplContingencyTable) mat;
 						min = Math.min(min, cmat.getMatrix().values().stream().mapToInt(v -> v.getValue()).sum());
