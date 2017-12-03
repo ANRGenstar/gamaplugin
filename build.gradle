@@ -17,7 +17,7 @@ buildscript {
     dependencies {
         classpath 'org.hidetake:gradle-ssh-plugin:2.7.2'
         classpath "org.standardout:bnd-platform:1.6.0-SNAPSHOT"
-        classpath "com.diffplug.gradle:goomph:3.8.1"
+        classpath "com.diffplug.gradle:goomph:3.9.0-SNAPSHOT"
     }
 }
 
