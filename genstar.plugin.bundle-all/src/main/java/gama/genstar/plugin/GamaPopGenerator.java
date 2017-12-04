@@ -11,17 +11,11 @@
 
 package gama.genstar.plugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import core.metamodel.IAttribute;
-import core.metamodel.pop.APopulationAttribute;
-import core.metamodel.pop.io.GSSurveyWrapper;
-import gospl.entity.attribute.GosplAttributeFactory;
+import core.configuration.dictionary.DemographicDictionary;
+import core.metamodel.attribute.IAttribute;
+import core.metamodel.attribute.demographic.DemographicAttribute;
+import core.metamodel.attribute.demographic.DemographicAttributeFactory;
+import core.metamodel.io.GSSurveyWrapper;
 import msi.gama.common.interfaces.IValue;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.getter;
@@ -37,6 +31,8 @@ import msi.gama.util.IList;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 
+import java.util.*;
+
 @vars({@var(name = "attributes", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of attribute names") }),
 	 @var(name = "census_files", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of census files") }), 
 	 @var(name = "generation_algo", type = IType.STRING, doc = {@doc("Returns the name of the generation algorithm") }),
@@ -47,13 +43,12 @@ import msi.gaml.types.Types;
 })
 public class GamaPopGenerator implements IValue {
 
-	// Setup the factory that build attribute
-	GosplAttributeFactory attf ;
-
 	// What to define in this configuration file
 	List<GSSurveyWrapper> inputFiles;
-	Set<APopulationAttribute> inputAttributes ;
-	Map<String, IAttribute<? extends core.metamodel.IValue>> inputKeyMap ;
+	DemographicDictionary<DemographicAttribute<? extends core.metamodel.value.IValue>> inputAttributes ;
+
+	Map<String, IAttribute<? extends core.metamodel.value.IValue>> inputKeyMap ;
+
 	boolean spatializePopulation;
 	String generationAlgorithm;
 	
@@ -70,9 +65,8 @@ public class GamaPopGenerator implements IValue {
 	
 	public GamaPopGenerator() {
 		inputFiles = new ArrayList<>();
-		inputAttributes = new HashSet<>();
-		inputKeyMap = new HashMap<>();
-		attf = new GosplAttributeFactory();
+		inputAttributes = new DemographicDictionary<>();
+		//inputKeyMap = new HashMap<>();
 		generationAlgorithm = "IS";
 		pathsRegressionData = new ArrayList<>();
 	}
@@ -103,12 +97,8 @@ public class GamaPopGenerator implements IValue {
 		return null;
 	}
 
-	public GosplAttributeFactory getAttf() {
-		return attf;
-	}
-
-	public void setAttf(GosplAttributeFactory attf) {
-		this.attf = attf;
+	public DemographicAttributeFactory getAttf() {
+		return DemographicAttributeFactory.getFactory();
 	}
 
 	public List<GSSurveyWrapper> getInputFiles() {
@@ -119,19 +109,19 @@ public class GamaPopGenerator implements IValue {
 		this.inputFiles = inputFiles;
 	}
 
-	public Set<APopulationAttribute> getInputAttributes() {
+	public DemographicDictionary<DemographicAttribute<? extends core.metamodel.value.IValue>> getInputAttributes() {
 		return inputAttributes;
 	}
 
-	public void setInputAttributes(Set<APopulationAttribute> inputAttributes) {
+	public void setInputAttributes(DemographicDictionary<DemographicAttribute<? extends core.metamodel.value.IValue>> inputAttributes) {
 		this.inputAttributes = inputAttributes;
 	}
 
-	public Map<String, IAttribute<? extends core.metamodel.IValue>> getInputKeyMap() {
+	public Map<String, IAttribute<? extends core.metamodel.value.IValue>> getInputKeyMap() {
 		return inputKeyMap;
 	}
 
-	public void setInputKeyMap(Map<String, IAttribute<? extends core.metamodel.IValue>> inputKeyMap) {
+	public void setInputKeyMap(Map<String, IAttribute<? extends core.metamodel.value.IValue>> inputKeyMap) {
 		this.inputKeyMap = inputKeyMap;
 	}
 
@@ -244,14 +234,15 @@ public class GamaPopGenerator implements IValue {
 	@getter("attributes")
 	public IList<String> getAttributeName(){
 		IList<String> atts = GamaListFactory.create(Types.STRING);
-		for (APopulationAttribute a : this.getInputAttributes()) atts.add(a.getAttributeName());
+		for (DemographicAttribute<? extends core.metamodel.value.IValue> a : this.getInputAttributes().getAttributes())
+			atts.add(a.getAttributeName());
 		return atts;
 	}
 	
 	@getter("census_files")
 	public IList<String> getCensusFile(){
 		IList<String> f = GamaListFactory.create(Types.STRING);
-		for (GSSurveyWrapper a : this.getInputFiles()) f.add(a.getAbsolutePath().toString());
+		for (GSSurveyWrapper a : this.getInputFiles()) f.add(a.getRelativePath().toString());
 		return f;
 	}
 	
