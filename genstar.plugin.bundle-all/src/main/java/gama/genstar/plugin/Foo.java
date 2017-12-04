@@ -38,6 +38,7 @@ public class Foo {
     @operator(
             value = "faitrien"
     )
+    @doc(value = "bla")
     public static String faitrien(String arg) {
         return arg;
     }
