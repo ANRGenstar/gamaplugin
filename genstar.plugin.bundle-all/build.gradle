@@ -79,7 +79,7 @@ apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
 jar.manifest.attributes(
         '-exportcontents': 'core.*, gospl.*, spin.*, spll.*, gaml.*, genstar.*',
         '-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
-        'Conditional-Package': '!org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !org.graphstream.*',
+        'Conditional-Package': '!org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !org.graphstream.*, *',
         'Import-Package': '!*',
         'Bundle-Version': '1.0.0.${tstamp}',
         'Bundle-SymbolicName': project.name,
