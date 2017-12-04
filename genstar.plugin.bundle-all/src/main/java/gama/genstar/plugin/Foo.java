@@ -33,12 +33,13 @@ import msi.gaml.operators.Spatial;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Foo {
 
     @operator(
             value = "faitrien"
     )
-    @doc(value = "bla")
+    @doc(value = "bla",test = false)
     public static String faitrien(String arg) {
         return arg;
     }
