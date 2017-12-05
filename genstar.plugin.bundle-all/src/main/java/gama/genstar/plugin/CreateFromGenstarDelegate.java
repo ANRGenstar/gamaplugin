@@ -11,15 +11,10 @@
 
 package gama.genstar.plugin;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import core.metamodel.IPopulation;
-import core.metamodel.pop.APopulationAttribute;
-import core.metamodel.pop.APopulationEntity;
-import core.metamodel.pop.APopulationValue;
+import core.metamodel.attribute.demographic.DemographicAttribute;
+import core.metamodel.entity.ADemoEntity;
+import core.metamodel.value.IValue;
 import msi.gama.common.interfaces.ICreateDelegate;
 import msi.gama.common.interfaces.IKeyword;
 import msi.gama.metamodel.shape.GamaShape;
@@ -29,7 +24,13 @@ import msi.gaml.operators.Spatial;
 import msi.gaml.statements.Arguments;
 import msi.gaml.statements.CreateStatement;
 import msi.gaml.types.IType;
+import spll.SpllEntity;
 import spll.SpllPopulation;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class CreateFromDatabaseDelegate.
@@ -70,22 +71,24 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 			CreateStatement statement) {
 		GamaPopGenerator gen = (GamaPopGenerator) source;
 		if (number == null) number = -1;
-		IPopulation<APopulationEntity, APopulationAttribute, APopulationValue> population = GenstarOperator.generatePop(scope, gen, number);
+		IPopulation<ADemoEntity, DemographicAttribute<? extends IValue>> population = GenstarOperator.generatePop(scope, gen, number);
 		if (gen == null) return false;
 		
-		final Collection<APopulationAttribute> attributes = population.getPopulationAttributes();
+		final Collection<DemographicAttribute<? extends IValue>> attributes = population.getPopulationAttributes();
 	    int nb = 0;
-        List<APopulationEntity> es = new ArrayList(population);
+        List<ADemoEntity> es = new ArrayList(population);
         if (number > 0 && number < es.size()) es = scope.getRandom().shuffle(es);
-        for (final APopulationEntity e : es) { 	
+        for (final ADemoEntity e : es) {
         	final Map map = (Map) GamaMapFactory.create();
         	if (population instanceof SpllPopulation) {
-        		if (e.getLocation() == null) continue;
-        		map.put(IKeyword.SHAPE, new GamaShape(gen.getCrs() != null ? Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(e.getLocation()), gen.getCrs()): Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(e.getLocation()))));
+        		SpllEntity spllE = (SpllEntity) e;
+        		if (spllE.getLocation() == null) continue;
+        		map.put(IKeyword.SHAPE, new GamaShape(gen.getCrs() != null
+						? Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(spllE.getLocation()), gen.getCrs())
+						: Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(spllE.getLocation()))));
         	}
-        	for (final APopulationAttribute attribute : attributes) {
-        		final String name = attribute.getAttributeName();
-        		map.put(name, GenstarOperator.getAttributeValue(scope, e, attribute));
+        	for (final DemographicAttribute<? extends IValue> attribute : attributes) {
+        		map.put(attribute.getAttributeName(), e.getValueForAttribute(attribute));
         	}
         	statement.fillWithUserInit(scope, map);
     		inits.add(map);
