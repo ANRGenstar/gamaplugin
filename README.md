@@ -35,7 +35,7 @@ Go to `/genstar.plugin.platform/` path and run the command `gradle updatesite`
 Add your correct credential (contact a team member) into `/genstar.plugin.platform/gradle-local.properties` like this
 
 ``` 
-genstarPassword=mycorrectcredential
+gradle addCredentials --key genstarpassw --value mypasswordforgenstar
 ```
 
 - In terminal, or directly in your IDE, run the `gradle deploy` command into the `/genstar.plugin.platform/` folder. 

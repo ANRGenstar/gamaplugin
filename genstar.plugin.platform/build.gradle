@@ -23,20 +23,17 @@ apply plugin: 'org.standardout.bnd-platform'
 
 platform {
 
+    updateSiteDir new File(buildDir, 'updatesite')
+    //updateSiteZipFile new File(buildDir, 'updatesite')
     eclipseMirror.linux.gtk.x86_64 = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
     determineImportVersions = true
     useBndHashQualifiers = false
     fetchSources = false
     importVersionStrategy = MAJOR
-
     feature(id: 'genstar.plugin', name: 'genstar.plugin', version: '1.0.0') {
-
         bundle file('../genstar.plugin.bundle-all/build/libs/genstar.plugin.bundle-all.jar')
-
     }
 }
-
-
 
 //import com.diffplug.gradle.p2.FeaturesAndBundlesPublisher;
 //import com.diffplug.gradle.eclipserunner.NativeRunner;
@@ -63,7 +60,17 @@ platform {
 //    }
 //}
 
+//task p2index {
+//    doLast {
+//        new File("./build/updatesite/p2.index").text =
+//                """version=1
+//metadata.repository.factory.order=content.jar,\\!
+//artifact.repository.factory.order=artifacts.jar,\\!
+//"""
+//    }
+//}
 
+apply plugin: 'nu.studer.credentials'
 apply plugin: 'org.hidetake.ssh'
 
     remotes {
@@ -71,17 +78,19 @@ apply plugin: 'org.hidetake.ssh'
             fileTransfer = 'sftp'
             host = 'web564.webfaction.com'
             user = 'genstarpws'
-            password = "Pj93ScGw7b"//{$GENSTAR_PASSWORD}
+            password = credentials.genstarpassw
             knownHosts = allowAnyHosts
         }
     }
 
-task deploy (dependsOn: p2site){
+task deploy (dependsOn: updateSite){
     doLast {
         ssh.run {
             session(remotes.webserver){
                 execute 'cd /home/reyman64/webapps/genstarp2/ ; rm -rf *'
-                new File('/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/p2site').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
+                execute 'ls /home/reyman64/webapps/genstarp2/'
+                //put (from: '/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/updatesite/p2.index', into: "/home/reyman64/webapps/genstarp2/")
+                new File('/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/updatesite').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
                 execute 'ls /home/reyman64/webapps/genstarp2/'
             }
         }
