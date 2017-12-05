@@ -12,26 +12,57 @@ configurations {
 */
 
 // BND PLUGIN
-
+/*
 configurations {
     platformaux
 }
-
-//dependencies {
-//    platformaux project(':genstar.plugin.bundle-all')
-//}
+ */
 
 
 apply plugin: 'org.standardout.bnd-platform'
 
 platform {
-    bundle file('../genstar.plugin.bundle-all/build/libs/genstar.plugin.bundle-all.jar')
+
     eclipseMirror.linux.gtk.x86_64 = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
     determineImportVersions = true
     useBndHashQualifiers = false
     fetchSources = false
     importVersionStrategy = MAJOR
+
+    feature(id: 'genstar.plugin', name: 'genstar.plugin', version: '1.0.0') {
+
+        bundle file('../genstar.plugin.bundle-all/build/libs/genstar.plugin.bundle-all.jar')
+
+    }
 }
+
+
+
+//import com.diffplug.gradle.p2.FeaturesAndBundlesPublisher;
+//import com.diffplug.gradle.eclipserunner.NativeRunner;
+//
+//task p2site(dependsOn: bundles){
+//    doLast {
+//        println 'bundle and deploy'
+//
+//        FeaturesAndBundlesPublisher p2Publisher = new FeaturesAndBundlesPublisher();
+//        File source = new File("/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/")
+//        File outputFolder = new File("/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/p2site/")
+//        outputFolder.mkdir()
+//
+//        File eclipseFolderExec = new File("/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/eclipse-downloads/eclipse/eclipse")
+//        p2Publisher.source(source)
+//        p2Publisher.compress()
+//        p2Publisher.addArg("nosplash", "")
+//        p2Publisher.addArg("debug", "")
+//        p2Publisher.artifactRepository(outputFolder)
+//        p2Publisher.metadataRepository(outputFolder)
+//        p2Publisher.publishArtifacts()
+//
+//        p2Publisher.runUsing(new NativeRunner(eclipseFolderExec))
+//    }
+//}
+
 
 apply plugin: 'org.hidetake.ssh'
 
@@ -40,17 +71,18 @@ apply plugin: 'org.hidetake.ssh'
             fileTransfer = 'sftp'
             host = 'web564.webfaction.com'
             user = 'genstarpws'
-            password = {$GENSTAR_PASSWORD}
+            password = "Pj93ScGw7b"//{$GENSTAR_PASSWORD}
             knownHosts = allowAnyHosts
         }
     }
 
-task deploy {
+task deploy (dependsOn: p2site){
     doLast {
         ssh.run {
             session(remotes.webserver){
                 execute 'cd /home/reyman64/webapps/genstarp2/ ; rm -rf *'
-                new File('build/updatesite/').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
+                new File('/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/p2site').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
+                execute 'ls /home/reyman64/webapps/genstarp2/'
             }
         }
     }

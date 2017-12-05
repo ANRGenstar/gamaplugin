@@ -1,6 +1,9 @@
 *.class
 *.log
 
+# project specific
+p2site/
+
 # sbt specific
 .cache
 .history
