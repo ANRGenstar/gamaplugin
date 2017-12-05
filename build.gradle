@@ -8,6 +8,7 @@ buildscript {
         mavenLocal()
         maven { url "https://plugins.gradle.org/m2/"}
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+        maven {url 'http://oss.sonatype.org/content/repositories/snapshots/'}
     }
 
     // make sure we don't cache stale snapshot versions
@@ -17,8 +18,8 @@ buildscript {
 
     dependencies {
         classpath 'org.hidetake:gradle-ssh-plugin:2.7.2'
-        classpath "org.standardout:bnd-platform:1.5.0"
-        classpath "com.diffplug.gradle:goomph:3.7.0"
+        classpath "org.standardout:bnd-platform:1.6.0-SNAPSHOT"
+        classpath "com.diffplug.gradle:goomph:3.9.0-SNAPSHOT"
     }
 }
 gradle.afterProject {project, projectState ->
