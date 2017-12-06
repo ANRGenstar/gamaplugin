@@ -42,6 +42,8 @@ then copy/paste the path given by `which gradle` in your terminal in your Intell
 If it not works, install a local Gradle using Terminal like described in step **(1)**
 then copy/paste the path given by `which gradle` in your terminal in your Intellij Gradle settings, in the **Local installation directory** box.
 
+You could also use the `gradle eclipse` command in root folder to generate *.classpath*, *.project* files for import into Eclipse.
+
 # C - Build and/or deploy genstar-gama bundles
 
 ## How to build genstar-plugin-all bundle ?
