@@ -1,8 +1,8 @@
-# gamaplugin
+# Plugin Genstar for GAMA platform simulation.
 
 [![Build Status](https://travis-ci.org/ANRGenstar/gamaplugin.svg?branch=master)](https://travis-ci.org/ANRGenstar/gamaplugin)
 
-This repository contains all feature that connect Gen* api to the Gama platform
+This repository contains all features that connect [GenStar](http://www.agence-nationale-recherche.fr/Projet-ANR-13-MONU-0006) project and [Api](https://github.com/ANRGenstar/) to the [Gama simulation platform](http://gama-platform.org/)
 
 In order to build the **genstar-plugin** for Gama, the Gradle build system use multiples dependencies from :
 - [Genstar](https://github.com/ANRGenstar/genstar) bundles, built with Maven, and stored/updated on [Bintray repository](https://bintray.com/anrgenstar)
