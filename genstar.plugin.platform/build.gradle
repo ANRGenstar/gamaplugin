@@ -10,15 +10,7 @@ configurations {
     }
 }
 */
-
-// BND PLUGIN
-/*
-configurations {
-    platformaux
-}
- */
-
-
+apply plugin: 'java'
 apply plugin: 'org.standardout.bnd-platform'
 
 platform {
@@ -28,47 +20,16 @@ platform {
     eclipseMirror.linux.gtk.x86_64 = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
     determineImportVersions = true
     useBndHashQualifiers = false
+    useFeatureHashQualifiers = false
     fetchSources = false
     importVersionStrategy = MAJOR
-    feature(id: 'genstar.plugin', name: 'genstar.plugin', version: '1.0.0') {
+
+    feature(id: 'genstar.plugin', name: 'genstar.plugin', version:'1.0.0') {
         bundle file('../genstar.plugin.bundle-all/build/libs/genstar.plugin.bundle-all.jar')
     }
+
 }
 
-//import com.diffplug.gradle.p2.FeaturesAndBundlesPublisher;
-//import com.diffplug.gradle.eclipserunner.NativeRunner;
-//
-//task p2site(dependsOn: bundles){
-//    doLast {
-//        println 'bundle and deploy'
-//
-//        FeaturesAndBundlesPublisher p2Publisher = new FeaturesAndBundlesPublisher();
-//        File source = new File("/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/")
-//        File outputFolder = new File("/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/p2site/")
-//        outputFolder.mkdir()
-//
-//        File eclipseFolderExec = new File("/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/eclipse-downloads/eclipse/eclipse")
-//        p2Publisher.source(source)
-//        p2Publisher.compress()
-//        p2Publisher.addArg("nosplash", "")
-//        p2Publisher.addArg("debug", "")
-//        p2Publisher.artifactRepository(outputFolder)
-//        p2Publisher.metadataRepository(outputFolder)
-//        p2Publisher.publishArtifacts()
-//
-//        p2Publisher.runUsing(new NativeRunner(eclipseFolderExec))
-//    }
-//}
-
-//task p2index {
-//    doLast {
-//        new File("./build/updatesite/p2.index").text =
-//                """version=1
-//metadata.repository.factory.order=content.jar,\\!
-//artifact.repository.factory.order=artifacts.jar,\\!
-//"""
-//    }
-//}
 
 apply plugin: 'nu.studer.credentials'
 apply plugin: 'org.hidetake.ssh'
@@ -83,13 +44,21 @@ apply plugin: 'org.hidetake.ssh'
         }
     }
 
-task deploy (dependsOn: updateSite){
+task zip(type: Zip) {
+    from 'build/updatesite'
+    into('libs') {
+        from configurations.runtime
+    }
+    baseName = 'p2zip'
+}
+
+task deploy (dependsOn: [updateSite, zip]){
     doLast {
         ssh.run {
             session(remotes.webserver){
                 execute 'cd /home/reyman64/webapps/genstarp2/ ; rm -rf *'
                 execute 'ls /home/reyman64/webapps/genstarp2/'
-                //put (from: '/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/updatesite/p2.index', into: "/home/reyman64/webapps/genstarp2/")
+                put (from: '/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/distributions/p2zip.zip', into: "/home/reyman64/webapps/genstarp2/")
                 new File('/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/updatesite').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
                 execute 'ls /home/reyman64/webapps/genstarp2/'
             }
