@@ -30,7 +30,6 @@ platform {
 
 }
 
-
 apply plugin: 'nu.studer.credentials'
 apply plugin: 'org.hidetake.ssh'
 
