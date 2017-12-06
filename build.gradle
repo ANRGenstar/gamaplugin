@@ -23,6 +23,7 @@ buildscript {
         classpath "nu.studer:gradle-credentials-plugin:1.0.1"
     }
 }
+
 gradle.afterProject {project, projectState ->
     if (projectState.failure) {
         println "Evaluation of $project FAILED"
