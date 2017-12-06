@@ -326,7 +326,7 @@ public class GenstarOperator {
 	@doc(value = "generate a population composed of the given number of entities taking the form of a list of geometries", examples = @example(value = "generateLocalizedEntities(my_pop_generator, 1000)", test = false))
 	public static IList<IShape> generateLocalizedEntities(final IScope scope,GamaPopGenerator gen, Integer number) {
 		if (number == null) number = -1;
-		IPopulation<ADemoEntity, DemographicAttribute<? extends IValue>> population = generatePop(scope, gen, number);
+		IPopulation<? extends ADemoEntity, DemographicAttribute<? extends IValue>> population = generatePop(scope, gen, number);
 		IList<IShape> entities =  GamaListFactory.create(Types.GEOMETRY);
 		if (gen == null) return entities;
 		final Collection<DemographicAttribute<? extends IValue>> attributes = population.getPopulationAttributes();
@@ -361,7 +361,7 @@ public class GenstarOperator {
 	@doc(value = "generate a population composed of the given number of entities taking the form of a list of map: each map representing an entity", examples = @example(value = "generate_entities(my_pop_generator, 1000)", test = false))
 	public static IList<Map> generateEntities(final IScope scope,GamaPopGenerator gen, Integer number) {
 		if (number == null) number = -1;
-		IPopulation<ADemoEntity, DemographicAttribute<? extends IValue>> population = generatePop(scope, gen, number);
+		IPopulation<? extends ADemoEntity, DemographicAttribute<? extends IValue>> population = generatePop(scope, gen, number);
 		IList<Map> entities =  GamaListFactory.create(Types.MAP);
 		if (gen == null) return entities;
 		final Collection<DemographicAttribute<? extends IValue>> attributes = population.getPopulationAttributes();
