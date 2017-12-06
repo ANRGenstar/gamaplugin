@@ -49,7 +49,7 @@ task zip(type: Zip) {
     into('libs') {
         from configurations.runtime
     }
-    baseName = 'p2zip'
+    baseName = 'genstar-plugin'
 }
 
 task deploy (dependsOn: [updateSite, zip]){
@@ -58,8 +58,8 @@ task deploy (dependsOn: [updateSite, zip]){
             session(remotes.webserver){
                 execute 'cd /home/reyman64/webapps/genstarp2/ ; rm -rf *'
                 execute 'ls /home/reyman64/webapps/genstarp2/'
-                put (from: '/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/distributions/p2zip.zip', into: "/home/reyman64/webapps/genstarp2/")
-                new File('/home/reyman/Projets/genstar-gama-plugin/genstar.plugin.platform/build/updatesite').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
+                put (from: '$buildDir/genstar.plugin.platform/build/distributions/genstar-plugin.zip', into: "/home/reyman64/webapps/genstarp2/")
+                new File('$buildDir/updatesite').listFiles().each{put (from: it, into: "/home/reyman64/webapps/genstarp2/")}
                 execute 'ls /home/reyman64/webapps/genstarp2/'
             }
         }
