@@ -72,6 +72,7 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 		GamaPopGenerator gen = (GamaPopGenerator) source;
 		if (number == null) number = -1;
 		IPopulation<? extends ADemoEntity, DemographicAttribute<? extends IValue>> population = GenstarOperator.generatePop(scope, gen, number);
+		
 		if (gen == null) return false;
 		
 		final Collection<DemographicAttribute<? extends IValue>> attributes = population.getPopulationAttributes();

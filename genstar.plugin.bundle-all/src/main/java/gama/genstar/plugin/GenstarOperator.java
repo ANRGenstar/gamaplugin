@@ -1,8 +1,10 @@
 package gama.genstar.plugin;
 
 import core.configuration.GenstarConfigurationFile;
+import core.configuration.dictionary.DemographicDictionary;
 import core.metamodel.IPopulation;
 import core.metamodel.attribute.demographic.DemographicAttribute;
+import core.metamodel.attribute.demographic.DemographicAttributeFactory;
 import core.metamodel.entity.ADemoEntity;
 import core.metamodel.entity.AGeoEntity;
 import core.metamodel.io.GSSurveyType;
@@ -26,6 +28,7 @@ import gospl.distribution.matrix.INDimensionalMatrix;
 import gospl.distribution.matrix.coordinate.ACoordinate;
 import gospl.generator.DistributionBasedGenerator;
 import gospl.generator.ISyntheticGosplPopGenerator;
+import gospl.generator.util.GSUtilGenerator;
 import gospl.io.exception.InvalidSurveyFormatException;
 import gospl.sampler.IDistributionSampler;
 import gospl.sampler.ISampler;
@@ -48,6 +51,7 @@ import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.geotools.feature.SchemaException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import spll.SpllEntity;
 import spll.SpllPopulation;
@@ -83,7 +87,7 @@ public class GenstarOperator {
 		return GSSurveyType.Sample;
 	}
 	
-	public static GSEnumDataType toDataType(final IType type) {
+	public static GSEnumDataType toDataType(final IType type, final boolean ordered) {
 		int t = type.id();
 		if (t == IType.FLOAT)
 			return GSEnumDataType.Continue;
@@ -91,8 +95,13 @@ public class GenstarOperator {
 			return GSEnumDataType.Integer;
 		if (t == IType.BOOL)
 			return GSEnumDataType.Boolean;
+		if (t == GamaRangeIntType.id || t == GamaRangeFloatType.id )
+			return GSEnumDataType.Range;
+		if (ordered)
+			return GSEnumDataType.Order;
 		return GSEnumDataType.Nominal;
 	}
+
 	
 	@operator(value = "add_census_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add a census data file defined by its path (string), its type (\"ContingencyTable\", \"GlobalFrequencyTable\", \"LocalFrequencyTable\" or  \"Sample\"), its separator (string), the index of the first row of data (int) and the index of the first column of data (int) to a population_generator",
@@ -147,7 +156,13 @@ public class GenstarOperator {
 	@operator(value = "add_mapper", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add a mapper between source of data for a attribute to a population_generator. A mapper is defined by the name of the attribute, the datatype of attribute (type), the corresponding value (map<list,list>) and the type of attribute (\"unique\" or \"range\")",
 	examples = @example(value = " add_mapper(pop_gen, \"Age\", int, [[\"0 to 18\"]::[\"1 to 10\",\"11 to 18\"], [\"18 to 100\"]::[\"18 to 50\",\"51 to 100\"] , \"range\");", test = false))
-	public static GamaPopGenerator addMapper(GamaPopGenerator gen, String referenceAttribute, IType dataType, GamaMap values, String attType) {
+	public static GamaPopGenerator addMapper(GamaPopGenerator gen, String referenceAttribute, IType dataType, GamaMap values ) {
+		return addMapper(gen,referenceAttribute, dataType, values, false);
+	}
+	@operator(value = "add_mapper", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+	@doc(value = "add a mapper between source of data for a attribute to a population_generator. A mapper is defined by the name of the attribute, the datatype of attribute (type), the corresponding value (map<list,list>) and the type of attribute (\"unique\" or \"range\")",
+	examples = @example(value = " add_mapper(pop_gen, \"Age\", int, [[\"0 to 18\"]::[\"1 to 10\",\"11 to 18\"], [\"18 to 100\"]::[\"18 to 50\",\"51 to 100\"] , \"range\");", test = false))
+	public static GamaPopGenerator addMapper(GamaPopGenerator gen, String referenceAttribute, IType dataType, GamaMap values,Boolean ordered) {
 		if (gen == null) {
 			gen = new GamaPopGenerator();
 		}
@@ -168,7 +183,7 @@ public class GenstarOperator {
 			try {
 				
 				String name = att.getAttributeName() + "_" + (gen.getInputAttributes().getAttributes().size() + 1);
-				gen.getInputAttributes().addAttributes(gen.getAttf().createMappedAttribute(name, toDataType(dataType), att, mapper));
+				gen.getInputAttributes().addAttributes(gen.getAttf().createMappedAttribute(name, toDataType(dataType, ordered), att, mapper));
 			} catch (GSIllegalRangedData e) {
 				e.printStackTrace();
 			}	
@@ -182,18 +197,31 @@ public class GenstarOperator {
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) to a population_generator",
 			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"]);", test = false))
 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value) {
-		return addAttribute(gen, name, dataType, value, null);
+		return addAttribute(gen, name, dataType, value, null, false);
 	}
 	
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and record name (name of the attribute to record) to a population_generator", examples = @example(value = "add_attribute(pop_gen, \"iris\", string,liste_iris, \"unique\", \"P13_POP\")", test = false))
 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record) {
+		return addAttribute(gen, name, dataType, value, record, false);
+	}
+		
+	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) to a population_generator",
+			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"]);", test = false))
+	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, Boolean ordered) {
+		return addAttribute(gen, name, dataType, value, null, ordered);
+	}
+	
+	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and record name (name of the attribute to record) to a population_generator", examples = @example(value = "add_attribute(pop_gen, \"iris\", string,liste_iris, \"unique\", \"P13_POP\")", test = false))
+	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record, Boolean ordered) {
 		if (gen == null) {
 			gen = new GamaPopGenerator();
 		}
 		try {
 			DemographicAttribute<? extends IValue> attIris = gen.getAttf()
-					.createAttribute(name, toDataType(dataType), value);
+					.createAttribute(name, toDataType(dataType,ordered), value);
 			 gen.getInputAttributes().addAttributes(attIris);
 			 if (record != null && ! record.isEmpty()) {
 				 gen.getInputAttributes().addAttributes(gen.getAttf()
@@ -352,6 +380,52 @@ public class GenstarOperator {
         }	
 		return entities;
 	}
+
+	@operator(value = "dummy_generation")
+	public static IList<IShape> dummyPopGeneration(IScope scope,Integer number) {
+		IPopulation<ADemoEntity, DemographicAttribute<? extends IValue>> pop;
+		
+		DemographicDictionary<DemographicAttribute<? extends IValue>> atts = new DemographicDictionary<>();
+		try {
+			atts.addAttributes(DemographicAttributeFactory.getFactory()
+					.createAttribute("iris", GSEnumDataType.Nominal, Arrays.asList("765400102", "765400101")));
+		} catch (GSIllegalRangedData e1) {
+			e1.printStackTrace();
+		}
+		
+		GSUtilGenerator ug = new GSUtilGenerator(atts);
+		pop = ug.generate(number);
+	
+		return genPop(scope, pop, null, number);
+	}	
+	
+	public static IList<IShape> genPop(IScope scope, IPopulation<? extends ADemoEntity, DemographicAttribute<? extends IValue>> population, String crs, int number) {
+		IList<IShape> entities =  GamaListFactory.create(Types.GEOMETRY);
+		final Collection<DemographicAttribute<? extends IValue>> attributes = population.getPopulationAttributes();
+	    int nb = 0;
+        List<ADemoEntity> es = new ArrayList(population);
+        if (number > 0 && number < es.size()) es = scope.getRandom().shuffle(es);
+        for (final ADemoEntity e : es) {
+        	IShape entity = null;
+        	if (population instanceof SpllPopulation) {
+        		SpllEntity newE = (SpllEntity) e;
+        		if (newE.getLocation() == null) continue;
+        		entity = new GamaShape(crs != null ? 
+						Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(newE.getLocation()), crs)
+						: Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(newE.getLocation())));
+        	} else 
+        		entity = new GamaShape(Spatial.Punctal.any_location_in(scope, scope.getRoot().getGeometry()));
+            		
+        	for (final DemographicAttribute<? extends IValue> attribute : attributes)
+                entity.setAttribute(attribute.getAttributeName(), e.getValueForAttribute(attribute));
+            entities.add(entity);
+            nb ++;
+            if (number > 0 && nb >= number) break;
+        }	
+		return entities;
+	}
+	
+	
 	@operator(value = "generate_entities", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "generate a population taking the form of of a list of map (each map representing an entity) while trying to infer the entities number from the data", examples = @example(value = "generate_entities(my_pop_generator)", test = false))
 	public static IList<Map> generateEntities(final IScope scope,GamaPopGenerator gen) {
@@ -472,23 +546,7 @@ public class GenstarOperator {
 	}
 	
 
-	    private static Object drawValue(final IScope scope, final IType<?> type, final RangeValue value) {
-		Number[] range = value.getActualValue();
-	        switch (type.id()) {
-	            case IType.INT: {
-	                final int lower = range[0].intValue();
-	                final int upper = range[1].intValue();
-	                return scope.getRandom().between(lower, upper);
-	            }
-	            case IType.FLOAT: {
-	                final double lower = range[0].doubleValue();
-	                final double upper = range[1].doubleValue();
-	                return scope.getRandom().between(lower, upper);
-	            }
-	            default:
-	                return null;
-	        }
-	    }
+	   
 
 	    private static IType<?> getAttributeType(final DemographicAttribute<? extends IValue> attribute) {
 	        final GSEnumDataType gsType = attribute.getValueSpace().getType();
@@ -503,9 +561,9 @@ public class GenstarOperator {
 					GSEnumDataType innerType = new GSDataParser().getValueType(
 							((RangeSpace) attribute.getValueSpace()).getMin().toString());
 					if(innerType.equals(GSEnumDataType.Integer))
-						return Types.INT;
+						return new GamaRangeIntType();
 					else
-						return Types.FLOAT;
+						return new GamaRangeFloatType();
 	        }
 	        return Types.STRING;
 	    }
