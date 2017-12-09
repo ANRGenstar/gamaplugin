@@ -15,6 +15,7 @@ import core.configuration.dictionary.DemographicDictionary;
 import core.metamodel.attribute.IAttribute;
 import core.metamodel.attribute.demographic.DemographicAttribute;
 import core.metamodel.attribute.demographic.DemographicAttributeFactory;
+import core.metamodel.attribute.demographic.MappedDemographicAttribute;
 import core.metamodel.io.GSSurveyWrapper;
 import msi.gama.common.interfaces.IValue;
 import msi.gama.precompiler.GamlAnnotations.doc;
@@ -46,6 +47,8 @@ public class GamaPopGenerator implements IValue {
 	// What to define in this configuration file
 	List<GSSurveyWrapper> inputFiles;
 	DemographicDictionary<DemographicAttribute<? extends core.metamodel.value.IValue>> inputAttributes ;
+	 DemographicDictionary<MappedDemographicAttribute<? extends core.metamodel.value.IValue, ? extends 
+			 core.metamodel.value.IValue>> recordAttributes ;
 
 	Map<String, IAttribute<? extends core.metamodel.value.IValue>> inputKeyMap ;
 
@@ -66,6 +69,7 @@ public class GamaPopGenerator implements IValue {
 	public GamaPopGenerator() {
 		inputFiles = new ArrayList<>();
 		inputAttributes = new DemographicDictionary<>();
+		recordAttributes = new DemographicDictionary<>();
 		//inputKeyMap = new HashMap<>();
 		generationAlgorithm = "IS";
 		pathsRegressionData = new ArrayList<>();
@@ -275,5 +279,22 @@ public class GamaPopGenerator implements IValue {
 	public String getPathNestedGeometries() {
 		return pathNestedGeometries;
 	}
+
+
+
+	public DemographicDictionary<MappedDemographicAttribute<? extends core.metamodel.value.IValue, ? extends 
+			 core.metamodel.value.IValue>> getRecordAttributes() {
+		return recordAttributes;
+	}
+
+
+
+	public void setRecordAttributes(
+			 DemographicDictionary<MappedDemographicAttribute<? extends core.metamodel.value.IValue, ? extends 
+					 core.metamodel.value.IValue>> recordAttributes) {
+		this.recordAttributes = recordAttributes;
+	}
+	
+	
 
 }

@@ -1,19 +1,42 @@
 package gama.genstar.plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.geotools.feature.SchemaException;
+import org.opengis.referencing.operation.TransformException;
+
 import core.configuration.GenstarConfigurationFile;
 import core.configuration.dictionary.DemographicDictionary;
 import core.metamodel.IPopulation;
 import core.metamodel.attribute.demographic.DemographicAttribute;
 import core.metamodel.attribute.demographic.DemographicAttributeFactory;
+import core.metamodel.attribute.demographic.MappedDemographicAttribute;
 import core.metamodel.entity.ADemoEntity;
 import core.metamodel.entity.AGeoEntity;
 import core.metamodel.io.GSSurveyType;
 import core.metamodel.io.GSSurveyWrapper;
 import core.metamodel.io.IGSGeofile;
 import core.metamodel.value.IValue;
-import core.metamodel.value.numeric.RangeSpace;
+import core.metamodel.value.binary.BooleanValue;
+import core.metamodel.value.categoric.OrderedValue;
+import core.metamodel.value.numeric.ContinuousValue;
+import core.metamodel.value.numeric.IntegerValue;
 import core.metamodel.value.numeric.RangeValue;
-import core.util.data.GSDataParser;
 import core.util.data.GSEnumDataType;
 import core.util.excpetion.GSIllegalRangedData;
 import gospl.GosplEntity;
@@ -49,10 +72,6 @@ import msi.gama.util.IList;
 import msi.gaml.operators.Spatial;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.geotools.feature.SchemaException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 import spll.SpllEntity;
 import spll.SpllPopulation;
 import spll.algo.LMRegressionOLS;
@@ -64,14 +83,6 @@ import spll.io.SPLVectorFile;
 import spll.io.exception.InvalidGeoFormatException;
 import spll.popmapper.SPUniformLocalizer;
 import spll.popmapper.normalizer.SPLUniformNormalizer;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class GenstarOperator {
@@ -95,11 +106,11 @@ public class GenstarOperator {
 			return GSEnumDataType.Integer;
 		if (t == IType.BOOL)
 			return GSEnumDataType.Boolean;
-		if (t == GamaRangeIntType.id || t == GamaRangeFloatType.id )
+		if (t == GamaRangeType.id  )
 			return GSEnumDataType.Range;
 		if (ordered)
 			return GSEnumDataType.Order;
-		return GSEnumDataType.Nominal;
+		return GSEnumDataType.Nominal; 
 	}
 
 	
@@ -220,13 +231,22 @@ public class GenstarOperator {
 			gen = new GamaPopGenerator();
 		}
 		try {
+			
+			
 			DemographicAttribute<? extends IValue> attIris = gen.getAttf()
 					.createAttribute(name, toDataType(dataType,ordered), value);
 			 gen.getInputAttributes().addAttributes(attIris);
 			 if (record != null && ! record.isEmpty()) {
-				 gen.getInputAttributes().addAttributes(gen.getAttf()
+				 gen.getRecordAttributes().addAttributes(gen.getAttf()
+						 .createIntegerRecordAttribute(record,attIris));
+			
+			/*DemographicAttribute<? extends IValue> attIris = gen.getAttf()
+					.createAttribute(name, toDataType(dataType,ordered), value);
+			 gen.getInputAttributes().addAttributes(attIris);
+			 if (record != null && ! record.isEmpty()) {
+				 gen.getRecordAttributes().addAttributes(gen.getAttf()
 						 .createRecordAttribute("population", GSEnumDataType.Integer,
-								 attIris, Collections.emptyMap()));
+								 attIris, Collections.emptyMap()));*/
 			 }
 		} catch (GSIllegalRangedData e) {
 			e.printStackTrace();
@@ -253,7 +273,7 @@ public class GenstarOperator {
 		GenstarConfigurationFile confFile = new GenstarConfigurationFile();
 		confFile.setSurveyWrappers(gen.getInputFiles());
 		confFile.setDemoDictionary(gen.getInputAttributes());
-
+		confFile.setRecords(gen.getRecordAttributes());
 		GosplInputDataManager gdb = null;
        gdb = new GosplInputDataManager(confFile);
        IPopulation<ADemoEntity, DemographicAttribute<? extends IValue>> population = new GosplPopulation();
@@ -358,7 +378,7 @@ public class GenstarOperator {
 		IList<IShape> entities =  GamaListFactory.create(Types.GEOMETRY);
 		if (gen == null) return entities;
 		final Collection<DemographicAttribute<? extends IValue>> attributes = population.getPopulationAttributes();
-	    int nb = 0;
+	   int nb = 0;
         List<ADemoEntity> es = new ArrayList(population);
         if (number > 0 && number < es.size()) es = scope.getRandom().shuffle(es);
         for (final ADemoEntity e : es) {
@@ -372,8 +392,10 @@ public class GenstarOperator {
         	} else 
         		entity = new GamaShape(Spatial.Punctal.any_location_in(scope, scope.getRoot().getGeometry()));
             		
-        	for (final DemographicAttribute<? extends IValue> attribute : attributes)
-                entity.setAttribute(attribute.getAttributeName(), e.getValueForAttribute(attribute));
+        	for (final DemographicAttribute<? extends IValue> attribute : attributes) {
+        		 entity.setAttribute(attribute.getAttributeName(), toGAMAValue(scope,e.getValueForAttribute(attribute), true));
+        	  }
+        	
             entities.add(entity);
             nb ++;
             if (number > 0 && nb >= number) break;
@@ -381,6 +403,34 @@ public class GenstarOperator {
 		return entities;
 	}
 
+	static Object toGAMAValue(IScope scope, IValue val, boolean checkEmpty) {
+		GSEnumDataType type= val.getType();
+		if (checkEmpty && val.equals(val.getValueSpace().getEmptyValue())) return toGAMAValue(scope, val.getValueSpace().getEmptyValue(), false);
+		if (type == GSEnumDataType.Boolean) {
+			return ((BooleanValue) val).getActualValue();
+		}
+		if (type == GSEnumDataType.Continue) {
+			if (val instanceof RangeValue) return toGAMARange(val);
+			return ((ContinuousValue) val).getActualValue();
+		}
+		if (type == GSEnumDataType.Integer) {
+			if (val instanceof RangeValue) return toGAMARange(val);
+			return ((IntegerValue) val).getActualValue();
+		}
+		if (type == GSEnumDataType.Range) {
+			return toGAMARange(val);
+		}
+		return val.getStringValue();
+	}
+	
+	static GamaRange toGAMARange(IValue val) {
+		
+		Number[] vals = ((RangeValue) val).getActualValue();
+		if (vals.length == 0) return null;
+		Number rangeMin = vals[0];
+		Number rangeMax = vals.length > 1 ? vals[1] : Double.MAX_VALUE;
+		return new GamaRange(rangeMin.doubleValue(), rangeMax.doubleValue());
+	}
 	@operator(value = "dummy_generation")
 	public static IList<IShape> dummyPopGeneration(IScope scope,Integer number) {
 		IPopulation<ADemoEntity, DemographicAttribute<? extends IValue>> pop;
@@ -417,7 +467,7 @@ public class GenstarOperator {
         		entity = new GamaShape(Spatial.Punctal.any_location_in(scope, scope.getRoot().getGeometry()));
             		
         	for (final DemographicAttribute<? extends IValue> attribute : attributes)
-                entity.setAttribute(attribute.getAttributeName(), e.getValueForAttribute(attribute));
+                entity.setAttribute(attribute.getAttributeName(), toGAMAValue(scope, e.getValueForAttribute(attribute), true));
             entities.add(entity);
             nb ++;
             if (number > 0 && nb >= number) break;
@@ -449,7 +499,7 @@ public class GenstarOperator {
         	 		
         	for (final DemographicAttribute<? extends IValue> attribute : attributes) {
                 final String name = attribute.getAttributeName();
-                entity.put(name, e.getValueForAttribute(attribute));
+                entity.put(name,toGAMAValue(scope, e.getValueForAttribute(attribute), true));
 
             	if (population instanceof SpllPopulation) {
             		SpllEntity newE = (SpllEntity) e;
@@ -480,12 +530,10 @@ public class GenstarOperator {
 		File sfCensusF = gen.getPathCensusGeometries() == null ? null : new File(gen.getPathCensusGeometries());
 		
 		try {
-			sfGeoms = new SPLGeofileBuilder().setFile(sfGeomsF).buildShapeFile();
+			sfGeoms = SPLGeofileBuilder.getShapeFile(sfGeomsF, null);
 			if (sfCensusF != null && sfCensusF.exists())
-				sfCensus = new SPLGeofileBuilder().setFile(sfCensusF).buildShapeFile();
+				sfCensus = SPLGeofileBuilder.getShapeFile(sfCensusF, null);
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SchemaException e) {
 			e.printStackTrace();
 		} catch (InvalidGeoFormatException e) {
 			e.printStackTrace();
@@ -545,27 +593,4 @@ public class GenstarOperator {
 		return localizer.localisePopulation();
 	}
 	
-
-	   
-
-	    private static IType<?> getAttributeType(final DemographicAttribute<? extends IValue> attribute) {
-	        final GSEnumDataType gsType = attribute.getValueSpace().getType();
-	        switch (gsType) {
-	            case Boolean:
-	                return Types.BOOL;
-	            case Integer:
-	                return Types.INT;
-				case Continue:
-	                return Types.FLOAT;
-				case Range:
-					GSEnumDataType innerType = new GSDataParser().getValueType(
-							((RangeSpace) attribute.getValueSpace()).getMin().toString());
-					if(innerType.equals(GSEnumDataType.Integer))
-						return new GamaRangeIntType();
-					else
-						return new GamaRangeFloatType();
-	        }
-	        return Types.STRING;
-	    }
-
 }

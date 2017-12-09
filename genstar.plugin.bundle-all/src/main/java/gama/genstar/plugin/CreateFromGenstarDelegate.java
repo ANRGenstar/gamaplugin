@@ -89,7 +89,7 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 						: Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(spllE.getLocation()))));
         	}
         	for (final DemographicAttribute<? extends IValue> attribute : attributes) {
-        		map.put(attribute.getAttributeName(), e.getValueForAttribute(attribute));
+        		map.put(attribute.getAttributeName(), GenstarOperator.toGAMAValue(scope, e.getValueForAttribute(attribute), true));
         	}
         	statement.fillWithUserInit(scope, map);
     		inits.add(map);
