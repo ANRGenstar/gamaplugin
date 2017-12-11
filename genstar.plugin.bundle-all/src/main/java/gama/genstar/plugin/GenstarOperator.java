@@ -1,8 +1,10 @@
-package gama.genstar.plugin;
+package main.java.gama.genstar.plugin;
 
 import core.configuration.GenstarConfigurationFile;
+import core.configuration.dictionary.DemographicDictionary;
 import core.metamodel.IPopulation;
 import core.metamodel.attribute.demographic.DemographicAttribute;
+import core.metamodel.attribute.demographic.DemographicAttributeFactory;
 import core.metamodel.entity.ADemoEntity;
 import core.metamodel.entity.AGeoEntity;
 import core.metamodel.io.GSSurveyType;
@@ -26,6 +28,7 @@ import gospl.distribution.matrix.INDimensionalMatrix;
 import gospl.distribution.matrix.coordinate.ACoordinate;
 import gospl.generator.DistributionBasedGenerator;
 import gospl.generator.ISyntheticGosplPopGenerator;
+import gospl.generator.util.GSUtilGenerator;
 import gospl.io.exception.InvalidSurveyFormatException;
 import gospl.sampler.IDistributionSampler;
 import gospl.sampler.ISampler;
@@ -48,6 +51,7 @@ import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.geotools.feature.SchemaException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import spll.SpllEntity;
 import spll.SpllPopulation;
@@ -93,6 +97,7 @@ public class GenstarOperator {
 			return GSEnumDataType.Boolean;
 		return GSEnumDataType.Nominal;
 	}
+
 	
 	@operator(value = "add_census_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add a census data file defined by its path (string), its type (\"ContingencyTable\", \"GlobalFrequencyTable\", \"LocalFrequencyTable\" or  \"Sample\"), its separator (string), the index of the first row of data (int) and the index of the first column of data (int) to a population_generator",
@@ -352,6 +357,52 @@ public class GenstarOperator {
         }	
 		return entities;
 	}
+
+	@operator(value = "dummy_generator")
+	public static IList<IShape> dummy_generator(IScope scope,Integer number) {
+		IPopulation<ADemoEntity, DemographicAttribute<? extends IValue>> pop;
+		
+		DemographicDictionary<DemographicAttribute<? extends IValue>> atts = new DemographicDictionary<>();
+		try {
+			atts.addAttributes(DemographicAttributeFactory.getFactory()
+					.createAttribute("iris", GSEnumDataType.Nominal, Arrays.asList("765400102", "765400101")));
+		} catch (GSIllegalRangedData e1) {
+			e1.printStackTrace();
+		}
+		
+		GSUtilGenerator ug = new GSUtilGenerator(atts);
+		pop = ug.generate(number);
+	
+		return genPop(scope, pop, null, number);
+	}	
+	
+	public static IList<IShape> genPop(IScope scope, IPopulation<? extends ADemoEntity, DemographicAttribute<? extends IValue>> population, String crs, int number) {
+		IList<IShape> entities =  GamaListFactory.create(Types.GEOMETRY);
+		final Collection<DemographicAttribute<? extends IValue>> attributes = population.getPopulationAttributes();
+	    int nb = 0;
+        List<ADemoEntity> es = new ArrayList(population);
+        if (number > 0 && number < es.size()) es = scope.getRandom().shuffle(es);
+        for (final ADemoEntity e : es) {
+        	IShape entity = null;
+        	if (population instanceof SpllPopulation) {
+        		SpllEntity newE = (SpllEntity) e;
+        		if (newE.getLocation() == null) continue;
+        		entity = new GamaShape(crs != null ? 
+						Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(newE.getLocation()), crs)
+						: Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(newE.getLocation())));
+        	} else 
+        		entity = new GamaShape(Spatial.Punctal.any_location_in(scope, scope.getRoot().getGeometry()));
+            		
+        	for (final DemographicAttribute<? extends IValue> attribute : attributes)
+                entity.setAttribute(attribute.getAttributeName(), e.getValueForAttribute(attribute));
+            entities.add(entity);
+            nb ++;
+            if (number > 0 && nb >= number) break;
+        }	
+		return entities;
+	}
+	
+	
 	@operator(value = "generate_entities", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "generate a population taking the form of of a list of map (each map representing an entity) while trying to infer the entities number from the data", examples = @example(value = "generate_entities(my_pop_generator)", test = false))
 	public static IList<Map> generateEntities(final IScope scope,GamaPopGenerator gen) {

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="gaml.extension" name="gaml.extension" schema="schema/gaml.extension.exsd"/>
    <extension
          point="gaml.extension">
    </extension>
    <extension
          point="gama.create">
       <implementation
-            class=" gama.genstar.plugin.CreateFromGenstarDelegate"
-            description="Create Genstar population">
+            class="main.java.gama.genstar.plugin.CreateFromGenstarDelegate">
       </implementation>
    </extension>
-
 </plugin>
