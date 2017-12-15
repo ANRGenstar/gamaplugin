@@ -1,4 +1,4 @@
-package gama.genstar.plugin;
+package main.java.gama.genstar.plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -431,8 +431,10 @@ public class GenstarOperator {
 		Number rangeMax = vals.length > 1 ? vals[1] : Double.MAX_VALUE;
 		return new GamaRange(rangeMin.doubleValue(), rangeMax.doubleValue());
 	}
+	
 	@operator(value = "dummy_generation")
-	public static IList<IShape> dummyPopGeneration(IScope scope,Integer number) {
+	@doc()
+	public static IList<IShape> dummyPopGeneration(IScope scope, Integer number) {
 		IPopulation<ADemoEntity, DemographicAttribute<? extends IValue>> pop;
 		
 		DemographicDictionary<DemographicAttribute<? extends IValue>> atts = new DemographicDictionary<>();

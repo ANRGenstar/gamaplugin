@@ -1,4 +1,4 @@
-package gama.genstar.plugin;
+package main.java.gama.genstar.plugin;
 
 import msi.gama.precompiler.IConcept;
 
