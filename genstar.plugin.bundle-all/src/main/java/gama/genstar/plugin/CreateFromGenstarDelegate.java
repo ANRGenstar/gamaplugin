@@ -9,7 +9,7 @@
  *
  **********************************************************************************************/
 
-package gama.genstar.plugin;
+package main.java.gama.genstar.plugin;
 
 import core.metamodel.IPopulation;
 import core.metamodel.attribute.demographic.DemographicAttribute;

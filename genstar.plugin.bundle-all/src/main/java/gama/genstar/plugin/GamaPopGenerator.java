@@ -9,7 +9,7 @@
  *
  **********************************************************************************************/
 
-package gama.genstar.plugin;
+package main.java.gama.genstar.plugin;
 
 import core.configuration.dictionary.DemographicDictionary;
 import core.metamodel.attribute.IAttribute;
