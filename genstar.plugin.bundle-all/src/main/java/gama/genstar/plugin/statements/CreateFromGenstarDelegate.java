@@ -9,12 +9,15 @@
  *
  **********************************************************************************************/
 
-package main.java.gama.genstar.plugin;
+package main.java.gama.genstar.plugin.statements;
 
 import core.metamodel.IPopulation;
-import core.metamodel.attribute.demographic.DemographicAttribute;
+import core.metamodel.attribute.Attribute;
 import core.metamodel.entity.ADemoEntity;
 import core.metamodel.value.IValue;
+import main.java.gama.genstar.plugin.GamaPopGenerator;
+import main.java.gama.genstar.plugin.GamaPopGeneratorType;
+import main.java.gama.genstar.plugin.operators.GenstarOperator;
 import msi.gama.common.interfaces.ICreateDelegate;
 import msi.gama.common.interfaces.IKeyword;
 import msi.gama.metamodel.shape.GamaShape;
@@ -71,11 +74,11 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 			CreateStatement statement) {
 		GamaPopGenerator gen = (GamaPopGenerator) source;
 		if (number == null) number = -1;
-		IPopulation<? extends ADemoEntity, DemographicAttribute<? extends IValue>> population = GenstarOperator.generatePop(scope, gen, number);
+		IPopulation<? extends ADemoEntity, Attribute<? extends IValue>> population = GenstarOperator.generatePop(scope, gen, number);
 		
 		if (gen == null) return false;
 		
-		final Collection<DemographicAttribute<? extends IValue>> attributes = population.getPopulationAttributes();
+		final Collection<Attribute<? extends IValue>> attributes = population.getPopulationAttributes();
 	    int nb = 0;
         List<ADemoEntity> es = new ArrayList(population);
         if (number > 0 && number < es.size()) es = scope.getRandom().shuffle(es);
@@ -88,7 +91,7 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 						? Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(spllE.getLocation()), gen.getCrs())
 						: Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(spllE.getLocation()))));
         	}
-        	for (final DemographicAttribute<? extends IValue> attribute : attributes) {
+        	for (final Attribute<? extends IValue> attribute : attributes) {
         		map.put(attribute.getAttributeName(), GenstarOperator.toGAMAValue(scope, e.getValueForAttribute(attribute), true));
         	}
         	statement.fillWithUserInit(scope, map);

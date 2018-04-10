@@ -11,11 +11,12 @@
 
 package main.java.gama.genstar.plugin;
 
-import core.configuration.dictionary.DemographicDictionary;
+import core.configuration.dictionary.AttributeDictionary;
+import core.configuration.dictionary.IGenstarDictionary;
 import core.metamodel.attribute.IAttribute;
-import core.metamodel.attribute.demographic.DemographicAttribute;
-import core.metamodel.attribute.demographic.DemographicAttributeFactory;
-import core.metamodel.attribute.demographic.MappedDemographicAttribute;
+import core.metamodel.attribute.Attribute;
+import core.metamodel.attribute.AttributeFactory;
+import core.metamodel.attribute.MappedAttribute;
 import core.metamodel.io.GSSurveyWrapper;
 import msi.gama.common.interfaces.IValue;
 import msi.gama.precompiler.GamlAnnotations.doc;
@@ -46,8 +47,8 @@ public class GamaPopGenerator implements IValue {
 
 	// What to define in this configuration file
 	List<GSSurveyWrapper> inputFiles;
-	DemographicDictionary<DemographicAttribute<? extends core.metamodel.value.IValue>> inputAttributes ;
-	 DemographicDictionary<MappedDemographicAttribute<? extends core.metamodel.value.IValue, ? extends 
+	AttributeDictionary inputAttributes ;
+	IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
 			 core.metamodel.value.IValue>> recordAttributes ;
 
 	Map<String, IAttribute<? extends core.metamodel.value.IValue>> inputKeyMap ;
@@ -68,13 +69,18 @@ public class GamaPopGenerator implements IValue {
 	
 	public GamaPopGenerator() {
 		inputFiles = new ArrayList<>();
-		inputAttributes = new DemographicDictionary<>();
-		recordAttributes = new DemographicDictionary<>();
+		inputAttributes = new AttributeDictionary();
+		// recordAttributes = new DemographicDictionary<>();
 		//inputKeyMap = new HashMap<>();
 		generationAlgorithm = "IS";
 		pathsRegressionData = new ArrayList<>();
 	}
-	
+
+	public GamaPopGenerator(IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
+			 core.metamodel.value.IValue>> recAttributes) {
+		this();
+		recordAttributes = recAttributes;
+	}
 	
 	
 	@Override
@@ -101,8 +107,8 @@ public class GamaPopGenerator implements IValue {
 		return null;
 	}
 
-	public DemographicAttributeFactory getAttf() {
-		return DemographicAttributeFactory.getFactory();
+	public AttributeFactory getAttf() {
+		return AttributeFactory.getFactory();
 	}
 
 	public List<GSSurveyWrapper> getInputFiles() {
@@ -113,11 +119,11 @@ public class GamaPopGenerator implements IValue {
 		this.inputFiles = inputFiles;
 	}
 
-	public DemographicDictionary<DemographicAttribute<? extends core.metamodel.value.IValue>> getInputAttributes() {
+	public AttributeDictionary getInputAttributes() {
 		return inputAttributes;
 	}
 
-	public void setInputAttributes(DemographicDictionary<DemographicAttribute<? extends core.metamodel.value.IValue>> inputAttributes) {
+	public void setInputAttributes(AttributeDictionary inputAttributes) {
 		this.inputAttributes = inputAttributes;
 	}
 
@@ -129,18 +135,9 @@ public class GamaPopGenerator implements IValue {
 		this.inputKeyMap = inputKeyMap;
 	}
 
-
-
-
-
 	public void setGenerationAlgorithm(String generationAlgorithm) {
 		this.generationAlgorithm = generationAlgorithm;
 	}
-
-
-
-	
-
 
 	public void setPathNestedGeometries(String pathGeometries) {
 		this.pathNestedGeometries = pathGeometries;
@@ -148,97 +145,64 @@ public class GamaPopGenerator implements IValue {
 			spatializePopulation = true;
 		else
 			spatializePopulation = false;
-	}
-
-
-
-	
-
+	}	
 
 	public List<String> getPathsRegressionData() {
 		return pathsRegressionData;
 	}
 
-
-
 	public void setPathsRegressionData(List<String> pathsRegressionData) {
 		this.pathsRegressionData = pathsRegressionData;
 	}
-
-
-
-	
-
 
 	public void setPathCensusGeometries(String pathCensusGeometries) {
 		this.pathCensusGeometries = pathCensusGeometries;
 	}
 
-
-
 	public String getStringOfCensusIdInCSVfile() {
 		return stringOfCensusIdInCSVfile;
 	}
-
-
 
 	public void setStringOfCensusIdInCSVfile(String stringOfCensusIdInCSVfile) {
 		this.stringOfCensusIdInCSVfile = stringOfCensusIdInCSVfile;
 	}
 
-
-
 	public String getStringOfCensusIdInShapefile() {
 		return stringOfCensusIdInShapefile;
 	}
-
-
 
 	public void setStringOfCensusIdInShapefile(String stringOfCensusIdInShapefile) {
 		this.stringOfCensusIdInShapefile = stringOfCensusIdInShapefile;
 	}
 
-
-
 	public boolean isSpatializePopulation() {
 		return spatializePopulation;
 	}
-
-
 
 	public void setSpatializePopulation(boolean spatializePopulation) {
 		this.spatializePopulation = spatializePopulation;
 	}
 
-
-
 	public String getCrs() {
 		return crs;
 	}
-
-
 
 	public void setCrs(String crs) {
 		this.crs = crs;
 	}
 
-
-
 	public String getSpatialContingencyId() {
 		return spatialContingencyId;
 	}
-
-
 
 	public void setSpatialContingencyId(String spatialContingencyId) {
 		this.spatialContingencyId = spatialContingencyId;
 	}
 	
-	
 	@getter("attributes")
 	public IList<String> getAttributeName(){
 		IList<String> atts = GamaListFactory.create(Types.STRING);
-		for (DemographicAttribute<? extends core.metamodel.value.IValue> a : this.getInputAttributes().getAttributes())
+		for (Attribute<? extends core.metamodel.value.IValue> a : this.getInputAttributes().getAttributes())
 			atts.add(a.getAttributeName());
 		return atts;
 	}
@@ -280,21 +244,14 @@ public class GamaPopGenerator implements IValue {
 		return pathNestedGeometries;
 	}
 
-
-
-	public DemographicDictionary<MappedDemographicAttribute<? extends core.metamodel.value.IValue, ? extends 
+	public IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
 			 core.metamodel.value.IValue>> getRecordAttributes() {
 		return recordAttributes;
 	}
 
-
-
 	public void setRecordAttributes(
-			 DemographicDictionary<MappedDemographicAttribute<? extends core.metamodel.value.IValue, ? extends 
+			IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
 					 core.metamodel.value.IValue>> recordAttributes) {
 		this.recordAttributes = recordAttributes;
 	}
-	
-	
-
 }

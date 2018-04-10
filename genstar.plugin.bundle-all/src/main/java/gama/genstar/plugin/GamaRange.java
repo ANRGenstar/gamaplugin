@@ -1,6 +1,7 @@
 package main.java.gama.genstar.plugin;
 
 import msi.gama.common.interfaces.IValue;
+import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.getter;
 import msi.gama.precompiler.GamlAnnotations.var;
 import msi.gama.precompiler.GamlAnnotations.vars;
@@ -9,8 +10,8 @@ import msi.gama.runtime.exceptions.GamaRuntimeException;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 
-@vars({ @var(name = "min_value", type = IType.FLOAT),
-@var(name = "max_value", type = IType.FLOAT)})
+@vars({ @var(name = "min_value", type = IType.FLOAT, doc = 	@doc("The lower bound of the range.")),
+@var(name = "max_value", type = IType.FLOAT, doc = @doc("The upper bound of the range."))})
 public class GamaRange implements IValue{
 
 	Number min; Number max;

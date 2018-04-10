@@ -8,7 +8,7 @@
    <extension
          point="gama.create">
       <implementation
-            class="main.java.gama.genstar.plugin.CreateFromGenstarDelegate">
+            class="main.java.gama.genstar.plugin.statements.CreateFromGenstarDelegate">
       </implementation>
    </extension>
 </plugin>

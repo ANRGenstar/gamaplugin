@@ -1,9 +1,7 @@
 package main.java.gama.genstar.plugin;
 
 import msi.gama.precompiler.IConcept;
-
-import java.util.List;
-
+import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.type;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
@@ -12,7 +10,7 @@ import msi.gaml.operators.Cast;
 import msi.gaml.types.GamaType;
 import msi.gaml.types.IType;
 
-@type(name = "range", id = GamaRangeType.id, wraps = { GamaRange.class }, concept = { IConcept.TYPE })
+@type(name = "range", id = GamaRangeType.id, wraps = { GamaRange.class }, concept = { IConcept.TYPE }, doc = @doc("The range type defined in the genstar plugin"))
 public class GamaRangeType extends GamaType<GamaRange>{
 	public final static int id = IType.AVAILABLE_TYPES + 3524246;
 
@@ -23,6 +21,7 @@ public class GamaRangeType extends GamaType<GamaRange>{
 
 
 	@Override
+	@SuppressWarnings({ "rawtypes"})	
 	public GamaRange cast(IScope scope, Object obj, Object param, boolean copy) throws GamaRuntimeException {
 		if (obj instanceof GamaRange) return (GamaRange) obj;
 		if (obj instanceof GamaList) {
