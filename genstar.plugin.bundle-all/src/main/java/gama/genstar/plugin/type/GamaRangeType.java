@@ -1,4 +1,4 @@
-package main.java.gama.genstar.plugin;
+package main.java.gama.genstar.plugin.type;
 
 import msi.gama.precompiler.IConcept;
 import msi.gama.precompiler.GamlAnnotations.doc;
@@ -10,7 +10,7 @@ import msi.gaml.operators.Cast;
 import msi.gaml.types.GamaType;
 import msi.gaml.types.IType;
 
-@type(name = "range", id = GamaRangeType.id, wraps = { GamaRange.class }, concept = { IConcept.TYPE }, doc = @doc("The range type defined in the genstar plugin"))
+@type(name = "gen_range", id = GamaRangeType.id, wraps = { GamaRange.class }, concept = { IConcept.TYPE }, doc = @doc("The range type defined in the genstar plugin"))
 public class GamaRangeType extends GamaType<GamaRange>{
 	public final static int id = IType.AVAILABLE_TYPES + 3524246;
 

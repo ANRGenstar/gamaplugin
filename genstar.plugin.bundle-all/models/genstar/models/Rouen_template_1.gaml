@@ -10,7 +10,7 @@ model Rouentemplate
 global {
 	
 	init {		
-		population_generator pop_gen;
+		gen_population_generator pop_gen;
 		pop_gen <- pop_gen with_generation_algo "IS";  //"Sample";//"IS";
 		pop_gen <- pop_gen add_census_file("../data/Age & Sexe-Tableau 1.csv", "ContingencyTable", ";", 1, 1);
 				

@@ -16,7 +16,7 @@ global {
 		create building from: bd_shp ;
 		create district from: district_shp;	
 		
-		population_generator pop_gen;
+		gen_population_generator pop_gen;
 		pop_gen <- pop_gen with_generation_algo "IS";  //"Sample";//"IS";
 		pop_gen <- pop_gen add_census_file("../data/Age & Couple-Tableau 1.csv", "ContingencyTable", ";", 1, 1);
 		pop_gen <- pop_gen add_census_file("../data/Age & Sexe & CSP-Tableau 1.csv", "ContingencyTable", ";", 2, 1);
@@ -30,7 +30,7 @@ global {
 									"50 à 54 ans", "55 à 59 ans", "60 à 64 ans", "65 à 69 ans", "70 à 74 ans", "75 à 79 ans", 
 									"80 à 84 ans", "85 à 89 ans", "90 à 94 ans", "95 à 99 ans", "100 ans ou plus"];
 		
-		pop_gen <- pop_gen add_attribute("Age", int,tranches_age, "range");
+		pop_gen <- pop_gen add_attribute("Age", int, tranches_age, "range");
 		
 		
 		list<string> liste_iris <- ["765400602", "765400104","765400306","765400201",

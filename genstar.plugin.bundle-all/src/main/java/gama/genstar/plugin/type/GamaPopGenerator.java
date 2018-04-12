@@ -9,14 +9,13 @@
  *
  **********************************************************************************************/
 
-package main.java.gama.genstar.plugin;
+package main.java.gama.genstar.plugin.type;
 
 import core.configuration.dictionary.AttributeDictionary;
-import core.configuration.dictionary.IGenstarDictionary;
 import core.metamodel.attribute.IAttribute;
 import core.metamodel.attribute.Attribute;
 import core.metamodel.attribute.AttributeFactory;
-import core.metamodel.attribute.MappedAttribute;
+import core.metamodel.attribute.record.RecordAttribute;
 import core.metamodel.io.GSSurveyWrapper;
 import msi.gama.common.interfaces.IValue;
 import msi.gama.precompiler.GamlAnnotations.doc;
@@ -48,8 +47,10 @@ public class GamaPopGenerator implements IValue {
 	// What to define in this configuration file
 	List<GSSurveyWrapper> inputFiles;
 	AttributeDictionary inputAttributes ;
-	IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
-			 core.metamodel.value.IValue>> recordAttributes ;
+
+	// les records dans l'AttributeDictionary inputAttributes
+	//	IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
+	//		 core.metamodel.value.IValue>> recordAttributes ;
 
 	Map<String, IAttribute<? extends core.metamodel.value.IValue>> inputKeyMap ;
 
@@ -76,12 +77,13 @@ public class GamaPopGenerator implements IValue {
 		pathsRegressionData = new ArrayList<>();
 	}
 
-	public GamaPopGenerator(IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
+/*	
+   public GamaPopGenerator(IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
 			 core.metamodel.value.IValue>> recAttributes) {
 		this();
 		recordAttributes = recAttributes;
 	}
-	
+*/	
 	
 	@Override
 	public String serialize(boolean includingBuiltIn) {
@@ -244,14 +246,17 @@ public class GamaPopGenerator implements IValue {
 		return pathNestedGeometries;
 	}
 
-	public IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
-			 core.metamodel.value.IValue>> getRecordAttributes() {
-		return recordAttributes;
+	public Collection<RecordAttribute<Attribute<? extends core.metamodel.value.IValue>, 
+				Attribute<? extends core.metamodel.value.IValue>>> getRecordAttributes() {
+		return inputAttributes.getRecords();
+		
 	}
 
-	public void setRecordAttributes(
-			IGenstarDictionary<MappedAttribute<? extends core.metamodel.value.IValue, ? extends 
-					 core.metamodel.value.IValue>> recordAttributes) {
-		this.recordAttributes = recordAttributes;
+/*	
+    public void setRecordAttribute(RecordAttribute<Attribute<? extends core.metamodel.value.IValue>, 
+				Attribute<? extends core.metamodel.value.IValue>> record) {
+		inputAttributes.addRecords(record);
 	}
+*/	
+
 }

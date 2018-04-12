@@ -1,4 +1,4 @@
-package main.java.gama.genstar.plugin;
+package main.java.gama.genstar.plugin.type;
 
 import msi.gama.common.interfaces.IValue;
 import msi.gama.precompiler.GamlAnnotations.doc;

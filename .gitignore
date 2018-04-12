@@ -38,3 +38,6 @@ bin/
 
 # Mac os
 **/.DS_store
+
+# For a use with GAMA 
+genstar.plugin.bundle-all/lib

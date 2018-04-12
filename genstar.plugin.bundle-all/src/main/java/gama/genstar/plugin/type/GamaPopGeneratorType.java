@@ -9,7 +9,7 @@
  *
  **********************************************************************************************/
 
- package main.java.gama.genstar.plugin;
+ package main.java.gama.genstar.plugin.type;
 
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.type;
@@ -19,7 +19,7 @@ import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
 import msi.gaml.types.GamaType;
 
-@type(name = "population_generator", id = 938373948, wraps = {
+@type(name = "gen_population_generator", id = 938373948, wraps = {
 		GamaPopGenerator.class }, kind = ISymbolKind.Variable.REGULAR, concept = { IConcept.TYPE },doc = {
 				@doc("Represents a population generator that can be used to create agents") })
 public class GamaPopGeneratorType extends GamaType<GamaPopGenerator> {

@@ -12,7 +12,7 @@ import core.metamodel.attribute.Attribute;
 import core.metamodel.io.GSSurveyWrapper;
 import core.metamodel.value.IValue;
 import core.util.excpetion.GSIllegalRangedData;
-import main.java.gama.genstar.plugin.GamaPopGenerator;
+import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import msi.gama.common.util.FileUtils;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
