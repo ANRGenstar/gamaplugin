@@ -38,6 +38,7 @@ public class GamaRangeType extends GamaType<GamaRange>{
 			} 
 			return null;
 		}
+		// if(obj instanceof Gama)
 		return null;
 	}
 

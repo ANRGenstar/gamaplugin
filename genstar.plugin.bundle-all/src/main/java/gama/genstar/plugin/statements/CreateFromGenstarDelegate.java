@@ -18,8 +18,10 @@ import core.metamodel.value.IValue;
 import main.java.gama.genstar.plugin.operators.GenstarOperator;
 import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import main.java.gama.genstar.plugin.type.GamaPopGeneratorType;
+import main.java.gama.genstar.plugin.utils.GenStarGamaUtils;
 import msi.gama.common.interfaces.ICreateDelegate;
 import msi.gama.common.interfaces.IKeyword;
+import msi.gama.metamodel.agent.IAgent;
 import msi.gama.metamodel.shape.GamaShape;
 import msi.gama.runtime.IScope;
 import msi.gama.util.GamaMapFactory;
@@ -76,6 +78,11 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 		if (number == null) number = -1;
 		IPopulation<? extends ADemoEntity, Attribute<? extends IValue>> population = GenstarOperator.generatePop(scope, gen, number);
 		
+		// Used to transform the GamaRange into a GAMA value...
+		IAgent executor = scope.getAgent();
+		msi.gama.metamodel.population.IPopulation<? extends IAgent> gama_pop = executor.getPopulationFor(statement.getDescription().getSpeciesContext().getName());
+
+		
 		if (gen == null) return false;
 		
 		final Collection<Attribute<? extends IValue>> attributes = population.getPopulationAttributes();
@@ -92,7 +99,10 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 						: Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(spllE.getLocation()))));
         	}
         	for (final Attribute<? extends IValue> attribute : attributes) {
-        		map.put(attribute.getAttributeName(), GenstarOperator.toGAMAValue(scope, e.getValueForAttribute(attribute), true));
+        		// Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true);
+        		Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true, gama_pop.getVar(attribute.getAttributeName()).getType());
+        		
+        		map.put(attribute.getAttributeName(), attributeValue);
         	}
         	statement.fillWithUserInit(scope, map);
     		inits.add(map);

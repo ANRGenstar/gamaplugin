@@ -13,6 +13,7 @@ import core.metamodel.io.GSSurveyWrapper;
 import core.metamodel.value.IValue;
 import core.util.excpetion.GSIllegalRangedData;
 import main.java.gama.genstar.plugin.type.GamaPopGenerator;
+import main.java.gama.genstar.plugin.utils.GenStarGamaUtils;
 import msi.gama.common.util.FileUtils;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
@@ -31,7 +32,7 @@ public class GenstarAdderOperators {
 	examples = @example(value = "add_census_file(pop_gen, \"../data/Age_Couple.csv\", \"ContingencyTable\", \";\", 1, 1)", test = false))
 	public static GamaPopGenerator addCensusFile(IScope scope, GamaPopGenerator gen, String path, String type, String csvSeparator, int firstRowIndex, int firstColumnIndex) throws GamaRuntimeException {
 		Path completePath = Paths.get(FileUtils.constructAbsoluteFilePath(scope, path, false));
-		gen.getInputFiles().add(new GSSurveyWrapper(completePath, GenstarOperator.toSurveyType(type), csvSeparator.isEmpty() ? ',':csvSeparator.charAt(0), firstRowIndex, firstColumnIndex));
+		gen.getInputFiles().add(new GSSurveyWrapper(completePath, GenStarGamaUtils.toSurveyType(type), csvSeparator.isEmpty() ? ',':csvSeparator.charAt(0), firstRowIndex, firstColumnIndex));
 		return gen;
 	}
 	
@@ -107,7 +108,7 @@ public class GenstarAdderOperators {
 			try {
 				
 				String name = att.getAttributeName() + "_" + (gen.getInputAttributes().getAttributes().size() + 1);
-				gen.getInputAttributes().addAttributes(gen.getAttf().createMappedAttribute(name, GenstarOperator.toDataType(dataType, ordered), att, mapper));
+				gen.getInputAttributes().addAttributes(gen.getAttf().createMappedAttribute(name, GenStarGamaUtils.toDataType(dataType, ordered), att, mapper));
 			} catch (GSIllegalRangedData e) {
 				e.printStackTrace();
 			}	
@@ -116,24 +117,33 @@ public class GenstarAdderOperators {
 		return gen;
 	}
 	
+	
+	
 
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) to a population_generator",
-			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"]);", test = false))
+			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"])", test = false))
 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value) {
 		return addAttribute(gen, name, dataType, value, null, false);
 	}
 	
+//	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+//	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and record name (name of the attribute to record) to a population_generator", 
+//			examples = @example(value = "add_attribute(pop_gen, \"iris\", string,liste_iris, \"unique\", \"P13_POP\")", test = false))
+//	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record) {
+//		return addAttribute(gen, name, dataType, value, record, false);
+//	}
+
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
-	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and record name (name of the attribute to record) to a population_generator", 
+	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and attributeType name (type of the attribute among \"range\" and \"unique\") to a population_generator", 
 			examples = @example(value = "add_attribute(pop_gen, \"iris\", string,liste_iris, \"unique\", \"P13_POP\")", test = false))
 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record) {
 		return addAttribute(gen, name, dataType, value, record, false);
-	}
-		
+	}	
+	
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) to a population_generator",
-			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"]);", test = false))
+			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"])", test = false))
 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, Boolean ordered) {
 		return addAttribute(gen, name, dataType, value, null, ordered);
 	}
@@ -141,14 +151,17 @@ public class GenstarAdderOperators {
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and record name (name of the attribute to record) to a population_generator", 
 			examples = @example(value = "add_attribute(pop_gen, \"iris\", string,liste_iris, \"unique\", \"P13_POP\")", test = false))
+// 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record, Boolean ordered) {	
 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record, Boolean ordered) {
 		if (gen == null) {
 			gen = new GamaPopGenerator();
 		}
+		
 		try {
 			Attribute<? extends IValue> newAttribute = 
-					gen.getAttf().createAttribute(name, GenstarOperator.toDataType(dataType,ordered), value);
-			 gen.getInputAttributes().addAttributes(newAttribute);
+					gen.getAttf().createAttribute(name, GenStarGamaUtils.toDataType(dataType,ordered), value);
+			
+			gen.getInputAttributes().addAttributes(newAttribute);
 			 
 			 // TODO : à revoir les records ..........
 		//	 if (record != null && ! record.isEmpty()) {
