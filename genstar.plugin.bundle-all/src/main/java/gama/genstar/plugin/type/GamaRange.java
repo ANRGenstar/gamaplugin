@@ -78,7 +78,7 @@ public class GamaRange implements IValue{
 	// TODO : à raffiner ... 
 	private double floatValue() {
 		Random random = GenstarRandom.getInstance();
-		return (max.doubleValue() - min.doubleValue()) * random.nextDouble() + min.doubleValue();
+		return (max.doubleValue() - min.doubleValue() + 1) * random.nextDouble() + min.doubleValue();
 	}
 
 	private int intValue() {

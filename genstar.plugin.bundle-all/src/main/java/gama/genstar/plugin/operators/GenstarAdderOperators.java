@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Optional;
 
 import core.metamodel.attribute.Attribute;
+import core.metamodel.attribute.AttributeFactory;
 import core.metamodel.io.GSSurveyWrapper;
 import core.metamodel.value.IValue;
 import core.util.excpetion.GSIllegalRangedData;
@@ -18,7 +18,6 @@ import msi.gama.common.util.FileUtils;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
 import msi.gama.precompiler.GamlAnnotations.operator;
-import msi.gama.runtime.GAMA;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
 import msi.gama.util.GamaMap;
@@ -35,7 +34,6 @@ public class GenstarAdderOperators {
 		gen.getInputFiles().add(new GSSurveyWrapper(completePath, GenStarGamaUtils.toSurveyType(type), csvSeparator.isEmpty() ? ',':csvSeparator.charAt(0), firstRowIndex, firstColumnIndex));
 		return gen;
 	}
-	
 	
 	@operator(value = "add_spatial_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add a spatial data file to locate the entities (nested geometries) defined by its path (string) to a population_generator",
@@ -76,48 +74,52 @@ public class GenstarAdderOperators {
 		gen.setStringOfCensusIdInShapefile(isInShapefile);
 		return gen;
 	}
+
+	
 	
 	@operator(value = "add_mapper", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add a mapper between source of data for a attribute to a population_generator. A mapper is defined by the name of the attribute, the datatype of attribute (type), the corresponding value (map<list,list>) and the type of attribute (\"unique\" or \"range\")",
 	examples = @example(value = " add_mapper(pop_gen, \"Age\", int, [[\"0 to 18\"]::[\"1 to 10\",\"11 to 18\"], [\"18 to 100\"]::[\"18 to 50\",\"51 to 100\"] , \"range\");", test = false))
-	public static GamaPopGenerator addMapper(GamaPopGenerator gen, String referenceAttribute, IType dataType, GamaMap values ) {
-		return addMapper(gen,referenceAttribute, dataType, values, false);
+	public static GamaPopGenerator addMapper(IScope scope, GamaPopGenerator gen, String referentAttributeName, IType dataType, GamaMap values ) {
+		return addMapper(scope, gen,referentAttributeName, dataType, values, false);
 	}
 	
+
+	// TODO : remove the type ... 
 	@operator(value = "add_mapper", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add a mapper between source of data for a attribute to a population_generator. A mapper is defined by the name of the attribute, the datatype of attribute (type), the corresponding value (map<list,list>) and the type of attribute (\"unique\" or \"range\")",
 	examples = @example(value = " add_mapper(pop_gen, \"Age\", int, [[\"0 to 18\"]::[\"1 to 10\",\"11 to 18\"], [\"18 to 100\"]::[\"18 to 50\",\"51 to 100\"] , \"range\");", test = false))
-	public static GamaPopGenerator addMapper(GamaPopGenerator gen, String referenceAttribute, IType dataType, GamaMap values,Boolean ordered) {
+	public static GamaPopGenerator addMapper(IScope scope, GamaPopGenerator gen, String referentAttributeName, IType dataType, GamaMap values, Boolean ordered) {
 		if (gen == null) {
 			gen = new GamaPopGenerator();
 		}
-		if (referenceAttribute == null) return gen;
-		Optional<Attribute<? extends IValue>> attopt = gen.getInputAttributes().getAttributes()
-				.stream().filter(a -> referenceAttribute.equals(a.getAttributeName())).findFirst();
-		if (attopt.isPresent()) {
-			Attribute<? extends IValue> att = attopt.get();
+		if (referentAttributeName == null) return gen;
+		
+		AttributeFactory attf = AttributeFactory.getFactory();		
+
+		Attribute<? extends IValue> referentAttribute = gen.getInputAttributes().getAttribute(referentAttributeName);
+		
+		if(referentAttribute != null) {			
 			Map<Collection<String>, Collection<String>> mapper = new Hashtable<>();
 			for (Object k : values.keySet()) {
-				Object v = values.get(GAMA.getRuntimeScope(), k);
+				Object v = values.get(scope, k);
 				if (k instanceof Collection && v instanceof Collection) {
 					Collection<String> key = new HashSet<String>((Collection)k);
 					Collection<String> val = new HashSet<String>((Collection)v);
 					mapper.put(key, val);
 				}
 			}
-			try {
-				
-				String name = att.getAttributeName() + "_" + (gen.getInputAttributes().getAttributes().size() + 1);
-				gen.getInputAttributes().addAttributes(gen.getAttf().createMappedAttribute(name, GenStarGamaUtils.toDataType(dataType, ordered), att, mapper));
+			
+			try {	
+				String name = referentAttribute.getAttributeName() + "_" + (gen.getInputAttributes().getAttributes().size() + 1);
+				gen.getInputAttributes().addAttributes(attf.createMappedAttribute(name,
+						GenStarGamaUtils.toDataType(dataType, ordered), referentAttribute, mapper));
 			} catch (GSIllegalRangedData e) {
 				e.printStackTrace();
-			}	
-			
+			}				
 		}
 		return gen;
 	}
-	
-	
 	
 
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
@@ -136,14 +138,14 @@ public class GenstarAdderOperators {
 
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and attributeType name (type of the attribute among \"range\" and \"unique\") to a population_generator", 
-			examples = @example(value = "add_attribute(pop_gen, \"iris\", string,liste_iris, \"unique\", \"P13_POP\")", test = false))
+			examples = @example(value = "add_attribute(pop_gen, \"iris\", string, liste_iris, \"unique\")", test = false))
 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record) {
 		return addAttribute(gen, name, dataType, value, record, false);
 	}	
 	
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) to a population_generator",
-			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"])", test = false))
+			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"], false)", test = false))
 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, Boolean ordered) {
 		return addAttribute(gen, name, dataType, value, null, ordered);
 	}
