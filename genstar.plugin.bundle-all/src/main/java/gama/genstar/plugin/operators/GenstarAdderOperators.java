@@ -11,6 +11,7 @@ import core.metamodel.attribute.Attribute;
 import core.metamodel.attribute.AttributeFactory;
 import core.metamodel.io.GSSurveyWrapper;
 import core.metamodel.value.IValue;
+import core.util.data.GSEnumDataType;
 import core.util.excpetion.GSIllegalRangedData;
 import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import main.java.gama.genstar.plugin.utils.GenStarGamaUtils;
@@ -122,39 +123,47 @@ public class GenstarAdderOperators {
 	}
 	
 
+	
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) to a population_generator",
 			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"])", test = false))
-	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value) {
-		return addAttribute(gen, name, dataType, value, null, false);
+	public static GamaPopGenerator addAttribute(IScope scope, GamaPopGenerator gen, String name, IType dataType, IList value) {
+		return addAttribute(scope, gen, name, dataType, value, false);
 	}
-	
-//	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
-//	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and record name (name of the attribute to record) to a population_generator", 
-//			examples = @example(value = "add_attribute(pop_gen, \"iris\", string,liste_iris, \"unique\", \"P13_POP\")", test = false))
-//	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record) {
-//		return addAttribute(gen, name, dataType, value, record, false);
-//	}
 
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and attributeType name (type of the attribute among \"range\" and \"unique\") to a population_generator", 
 			examples = @example(value = "add_attribute(pop_gen, \"iris\", string, liste_iris, \"unique\")", test = false))
-	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record) {
-		return addAttribute(gen, name, dataType, value, record, false);
+	public static GamaPopGenerator addAttribute(IScope scope, GamaPopGenerator gen, String name, IType dataType, IList value, String record, IType recordType) {
+		return addAttribute(scope, gen, name, dataType, value, false, record, recordType);
 	}	
-	
+
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) to a population_generator",
-			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"], false)", test = false))
-	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, Boolean ordered) {
-		return addAttribute(gen, name, dataType, value, null, ordered);
-	}
+			examples = @example(value = "add_attribute(pop_gen, \"Sex\", string,[\"Man\", \"Woman\"])", test = false))
+	public static GamaPopGenerator addAttribute(IScope scope, GamaPopGenerator gen, String name, IType dataType, IList value, Boolean ordered, String record, IType recordType) {
+		GamaPopGenerator genPop = addAttribute(scope, gen, name, dataType, value, ordered);
+		genPop.getInputAttributes().addRecords();
+		try {
+			genPop.getInputAttributes().addRecords(
+				gen.getAttf().createRecordAttribute(
+					record, 
+					GenStarGamaUtils.toDataType(recordType,false)/*GSEnumDataType.Integer*/, 
+					genPop.getInputAttributes().getAttribute(name)
+				)
+			);
+		} catch (GSIllegalRangedData e) {
+			GamaRuntimeException.error("Wrong type for the record", scope);
+		}
+	
+		return genPop;
+		
+	}	
 	
 	@operator(value = "add_attribute", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "add an attribute defined by its name (string), its datatype (type), its list of values (list) and record name (name of the attribute to record) to a population_generator", 
 			examples = @example(value = "add_attribute(pop_gen, \"iris\", string,liste_iris, \"unique\", \"P13_POP\")", test = false))
-// 	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record, Boolean ordered) {	
-	public static GamaPopGenerator addAttribute(GamaPopGenerator gen, String name, IType dataType, IList value, String record, Boolean ordered) {
+	public static GamaPopGenerator addAttribute(IScope scope, GamaPopGenerator gen, String name, IType dataType, IList value, Boolean ordered) {
 		if (gen == null) {
 			gen = new GamaPopGenerator();
 		}

@@ -13,6 +13,10 @@ global {
 	file f_ASCSP <- file("../data/Age & Sexe & CSP-Tableau 1.csv");
 	file f_IRIS <- file("../data/Rouen_iris.csv");
 
+	file bd_shp <- file("../data/shp/buildings.shp");
+	file district_shp <- file("../data/shp/Rouen_iris_number.shp");
+	geometry shape <- envelope(bd_shp);
+
 	list<string> tranches_age <- ["Moins de 5 ans", "5 à 9 ans", "10 à 14 ans", "15 à 19 ans", "20 à 24 ans", 
 				  				"25 à 29 ans", "30 à 34 ans", "35 à 39 ans", "40 à 44 ans", "45 à 49 ans", 
 								"50 à 54 ans", "55 à 59 ans", "60 à 64 ans", "65 à 69 ans", "70 à 74 ans", "75 à 79 ans", 
@@ -23,7 +27,10 @@ global {
 							"Employés", "Ouvriers", "Retraités", "Autres personnes sans activité professionnelle"];
 
 	
-	init {			
+	init {		
+		create building from: bd_shp ;
+		create district from: district_shp with: [code_iris::string(read('CODE_IRIS'))];			
+		
 		gen_population_generator pop_gen;
 		pop_gen <- pop_gen with_generation_algo "IS";  //"Sample";//"IS";
 
@@ -94,11 +101,13 @@ global {
 			"765401001","765400405","765400501","765400102","765400503",
 			"765400404","765400105","765401002","765400902","765400403",
 			"765400203","765400101","765400205"];
-		pop_gen <- pop_gen add_attribute("iris", string, liste_iris);//, , "P13_POP");    <--------- record !!!!
+		pop_gen <- pop_gen add_attribute("iris", string, liste_iris, "P13_POP", int);  
 
 
 				
-		create people from: pop_gen number: 10000;
+		create people from: pop_gen number: 10000 {
+			location <- any_location_in(first(district where(each.code_iris = iris)));
+		}
 	}
 }
 
@@ -110,14 +119,29 @@ species people {
 	string CSP;
 
 	aspect default { 
-		draw circle(0.5) color: #red border: #black;
+		draw circle(4) color: #red border: #black;
+	}
+}
+
+species building {
+	aspect default {
+		draw shape color: #gray border: #black;
+	}
+}
+
+species district {
+	string code_iris;
+	rgb color <- rnd_color(255);
+	aspect default {
+		draw shape color:color  border: #black;
 	}
 }
 
 experiment Rouentemplate type: gui {
 	output {
-		display map scale: true{
-		
+		display map scale: true type: opengl {
+			species district;
+			species building;			
 			species people;
 		}
 		
