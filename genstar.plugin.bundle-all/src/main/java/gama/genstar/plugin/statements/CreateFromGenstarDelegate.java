@@ -13,6 +13,7 @@ package main.java.gama.genstar.plugin.statements;
 
 import core.metamodel.IPopulation;
 import core.metamodel.attribute.Attribute;
+import core.metamodel.attribute.MappedAttribute;
 import core.metamodel.entity.ADemoEntity;
 import core.metamodel.value.IValue;
 import main.java.gama.genstar.plugin.operators.GenstarOperator;
@@ -24,11 +25,13 @@ import msi.gama.common.interfaces.IKeyword;
 import msi.gama.metamodel.agent.IAgent;
 import msi.gama.metamodel.shape.GamaShape;
 import msi.gama.runtime.IScope;
+import msi.gama.runtime.exceptions.GamaRuntimeException;
 import msi.gama.util.GamaMapFactory;
 import msi.gaml.operators.Spatial;
 import msi.gaml.statements.Arguments;
 import msi.gaml.statements.CreateStatement;
 import msi.gaml.types.IType;
+import msi.gaml.variables.IVariable;
 import spll.SpllEntity;
 import spll.SpllPopulation;
 
@@ -99,10 +102,34 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 						: Spatial.Projections.to_GAMA_CRS(scope, new GamaShape(spllE.getLocation()))));
         	}
         	for (final Attribute<? extends IValue> attribute : attributes) {
-        		// Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true);
-        		Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true, gama_pop.getVar(attribute.getAttributeName()).getType());
+        		// Get the species variable associated to the Genstar Attribute  
+        		IVariable var = gama_pop.getVar(attribute.getAttributeName());
+        		Object attributeValue;
+        		Attribute attributeToPut = attribute;
+        		// if the Attribute does not correspond to a variable, and if it is a MappedAttribute, try to get the Variable corresponding to the ReferentAttribute
+        		if(var == null) {
+        			if (attribute instanceof MappedAttribute) {
+                		Attribute referent_attribute = ((MappedAttribute) attribute).getReferentAttribute();
+        				var = gama_pop.getVar(referent_attribute.getAttributeName());
+        				if(var == null) {
+                			throw GamaRuntimeException.error("Neither the attribute " + attribute.getAttributeName() + ", nor its referent attribute " + 
+                							referent_attribute.getAttributeName() +"are defined in the species " + gama_pop.getSpecies().getName(), scope);
+        				} else {
+                    		attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForReferentAttributeOf((MappedAttribute) attribute), true, var.getType());		
+                    		attributeToPut = referent_attribute;
+        				}
+        			} else {
+            			throw GamaRuntimeException.error("The attribute " + attribute.getAttributeName() + "is not defined in the species " + gama_pop.getSpecies().getName(), scope);
+            		}
+        		} else {
+            		attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true, var.getType());	
+        		}
         		
-        		map.put(attribute.getAttributeName(), attributeValue);
+        		// Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true);
+        		// Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true, gama_pop.getVar(attribute.getAttributeName()).getType());
+        		// Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(local_attribute), true, var.getType());
+        		
+        		map.put(attributeToPut.getAttributeName(), attributeValue);
         	}
         	statement.fillWithUserInit(scope, map);
     		inits.add(map);
