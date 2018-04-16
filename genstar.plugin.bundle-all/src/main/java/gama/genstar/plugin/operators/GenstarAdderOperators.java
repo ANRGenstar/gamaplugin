@@ -36,45 +36,45 @@ public class GenstarAdderOperators {
 		return gen;
 	}
 	
-	@operator(value = "add_spatial_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
-	@doc(value = "add a spatial data file to locate the entities (nested geometries) defined by its path (string) to a population_generator",
-	examples = @example(value = "add_spatial_file(pop_gen, \"../data/buildings.shp\")", test = false))
-	public static GamaPopGenerator addGeographicFile(IScope scope, GamaPopGenerator gen, String path) throws GamaRuntimeException {
-		String completePath = FileUtils.constructAbsoluteFilePath(scope, path, false);
-		gen.setPathNestedGeometries(completePath);
-		return gen;
-	}
-	
-	@operator(value = "add_regression_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
-	@doc(value = "add a spatial regression data file defined by its path (string) to a population_generator",
-	examples = @example(value = "add_regression_file(pop_gen, \"../data/landuse.tif\")", test = false))
-	public static GamaPopGenerator addSpatialRegressionFile(IScope scope, GamaPopGenerator gen, String path) throws GamaRuntimeException {
-		String completePath = FileUtils.constructAbsoluteFilePath(scope, path, false);
-		gen.getPathsRegressionData().add(completePath);
-		return gen;
-	}
-	
-	@operator(value = "add_spatial_contingency_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
-	@doc(value = "add a spatial contingency data file defined by its path (string) and the name of the attribute containing the number used to place the entities to a population_generator",
-	examples = @example(value = "add_spatial_contingency_file(pop_gen, \"../data/district.shp\", \"POP\")", test = false))
-	public static GamaPopGenerator addSpatialContingencyFile(IScope scope, GamaPopGenerator gen, String path, String contingencyId) throws GamaRuntimeException {
-		String completePath = FileUtils.constructAbsoluteFilePath(scope, path, false);
-		gen.getPathsRegressionData().add(completePath);
-		gen.setSpatialContingencyId(contingencyId);
-		return gen;
-	}
-	
-	
-	@operator(value = "add_spatial_matcher", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
-	@doc(value = "add a spatial matcher data (link between the entities and the space) file defined by its path (string), the name of the key attribute in the entities and the name of the key attribute in the geographic file to a population_generator",
-	examples = @example(value = "add_spatial_matcher(pop_gen, \"../data/iris.shp\", \"iris\",\"IRIS\")", test = false))
-	public static GamaPopGenerator addSpatialMatcher(IScope scope, GamaPopGenerator gen, String path, String idInCensusFile, String isInShapefile) throws GamaRuntimeException {
-		String completePath = FileUtils.constructAbsoluteFilePath(scope, path, false);
-		gen.setPathCensusGeometries(completePath);
-		gen.setStringOfCensusIdInCSVfile(idInCensusFile);
-		gen.setStringOfCensusIdInShapefile(isInShapefile);
-		return gen;
-	}
+//	@operator(value = "add_spatial_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+//	@doc(value = "add a spatial data file to locate the entities (nested geometries) defined by its path (string) to a population_generator",
+//	examples = @example(value = "add_spatial_file(pop_gen, \"../data/buildings.shp\")", test = false))
+//	public static GamaPopGenerator addGeographicFile(IScope scope, GamaPopGenerator gen, String path) throws GamaRuntimeException {
+//		String completePath = FileUtils.constructAbsoluteFilePath(scope, path, false);
+//		gen.setPathNestedGeometries(completePath);
+//		return gen;
+//	}
+//	
+//	@operator(value = "add_regression_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+//	@doc(value = "add a spatial regression data file defined by its path (string) to a population_generator",
+//	examples = @example(value = "add_regression_file(pop_gen, \"../data/landuse.tif\")", test = false))
+//	public static GamaPopGenerator addSpatialRegressionFile(IScope scope, GamaPopGenerator gen, String path) throws GamaRuntimeException {
+//		String completePath = FileUtils.constructAbsoluteFilePath(scope, path, false);
+//		gen.getPathsRegressionData().add(completePath);
+//		return gen;
+//	}
+//	
+//	@operator(value = "add_spatial_contingency_file", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+//	@doc(value = "add a spatial contingency data file defined by its path (string) and the name of the attribute containing the number used to place the entities to a population_generator",
+//	examples = @example(value = "add_spatial_contingency_file(pop_gen, \"../data/district.shp\", \"POP\")", test = false))
+//	public static GamaPopGenerator addSpatialContingencyFile(IScope scope, GamaPopGenerator gen, String path, String contingencyId) throws GamaRuntimeException {
+//		String completePath = FileUtils.constructAbsoluteFilePath(scope, path, false);
+//		gen.getPathsRegressionData().add(completePath);
+//		gen.setSpatialContingencyId(contingencyId);
+//		return gen;
+//	}
+//	
+//	
+//	@operator(value = "add_spatial_matcher", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+//	@doc(value = "add a spatial matcher data (link between the entities and the space) file defined by its path (string), the name of the key attribute in the entities and the name of the key attribute in the geographic file to a population_generator",
+//	examples = @example(value = "add_spatial_matcher(pop_gen, \"../data/iris.shp\", \"iris\",\"IRIS\")", test = false))
+//	public static GamaPopGenerator addSpatialMatcher(IScope scope, GamaPopGenerator gen, String path, String idInCensusFile, String isInShapefile) throws GamaRuntimeException {
+//		String completePath = FileUtils.constructAbsoluteFilePath(scope, path, false);
+//		gen.setPathCensusGeometries(completePath);
+//		gen.setStringOfCensusIdInCSVfile(idInCensusFile);
+//		gen.setStringOfCensusIdInShapefile(isInShapefile);
+//		return gen;
+//	}
 
 	
 	

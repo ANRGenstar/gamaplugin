@@ -16,7 +16,7 @@ import core.metamodel.attribute.Attribute;
 import core.metamodel.attribute.MappedAttribute;
 import core.metamodel.entity.ADemoEntity;
 import core.metamodel.value.IValue;
-import main.java.gama.genstar.plugin.operators.GenstarOperator;
+import main.java.gama.genstar.plugin.operators.GenstarGenerationOperators;
 import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import main.java.gama.genstar.plugin.type.GamaPopGeneratorType;
 import main.java.gama.genstar.plugin.utils.GenStarGamaUtils;
@@ -79,7 +79,7 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 			CreateStatement statement) {
 		GamaPopGenerator gen = (GamaPopGenerator) source;
 		if (number == null) number = -1;
-		IPopulation<? extends ADemoEntity, Attribute<? extends IValue>> population = GenstarOperator.generatePop(scope, gen, number);
+		IPopulation<? extends ADemoEntity, Attribute<? extends IValue>> population = GenstarGenerationOperators.generatePop(scope, gen, number);
 		
 		// Used to transform the GamaRange into a GAMA value...
 		IAgent executor = scope.getAgent();

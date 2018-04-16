@@ -36,6 +36,6 @@ public class GenstarDefaultGenerationOperators {
 		GSUtilGenerator ug = new GSUtilGenerator(atts);
 		pop = ug.generate(number);
 	
-		return GenstarOperator.genPop(scope, pop, null, number);
+		return GenstarGenerationOperators.genPop(scope, pop, null, number);
 	}	
 }
