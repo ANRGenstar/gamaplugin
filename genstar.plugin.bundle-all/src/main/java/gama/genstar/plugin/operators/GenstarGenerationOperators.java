@@ -47,6 +47,7 @@ import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
 import msi.gama.precompiler.GamlAnnotations.operator;
 import msi.gama.runtime.IScope;
+import msi.gama.runtime.exceptions.GamaRuntimeException;
 import msi.gama.util.GamaListFactory;
 import msi.gama.util.GamaMapFactory;
 import msi.gama.util.IList;
@@ -65,7 +66,7 @@ import spll.popmapper.SPLocalizer;
 import spll.popmapper.normalizer.SPLUniformNormalizer;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class GenstarOperator {
+public class GenstarGenerationOperators {
 
 
 	@operator(value = "with_generation_algo", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
@@ -90,13 +91,10 @@ public class GenstarOperator {
 		confFile.setBaseDirectory(baseDirectory);
 		confFile.setSurveyWrappers(gen.getInputFiles());
 		confFile.setDictionary(gen.getInputAttributes());
-				
-	//	for( Attribute recordAttribute : gen.getRecordAttributes().getAttributes()) {
-	//		confFile.getDictionary().addRecords((RecordAttribute) recordAttribute);
-	//	
-	//	}
-		// TODO : removed .... ............. 
-		// confFile.setRecords(gen.getRecordAttributes());
+
+		////////////////////////////////////////////////////////////////////////
+		// Gospl generation
+		////////////////////////////////////////////////////////////////////////
 		
 		GosplInputDataManager gdb = new GosplInputDataManager(confFile);
 		
@@ -106,15 +104,10 @@ public class GenstarOperator {
     	
 			try {
 				gdb.buildSamples();
-			} catch (final RuntimeException e) {
+			} catch (final RuntimeException | IOException | InvalidSurveyFormatException | InvalidFormatException e) {
 				e.printStackTrace();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			} catch (final InvalidSurveyFormatException e) {
-				e.printStackTrace();
-			} catch (InvalidFormatException e) {
-				e.printStackTrace();
-			}
+			} 
+
     	   IPopulation p = gdb.getRawSamples().iterator().next();
 	       if (targetPopulation <= 0)
 	    	  return p;
@@ -177,9 +170,17 @@ public class GenstarOperator {
 	   }
        
        if (population == null) return null;
+       
+		////////////////////////////////////////////////////////////////////////
+		// Spll generation
+		////////////////////////////////////////////////////////////////////////       
        if (gen.isSpatializePopulation())
-			population = spatializePopulation(gen,population);
+			population = spatializePopulation(scope, gen, population);
       
+		////////////////////////////////////////////////////////////////////////
+		// Spin generation
+		////////////////////////////////////////////////////////////////////////      
+       
 		return population;
 	}
 	
@@ -293,83 +294,162 @@ public class GenstarOperator {
 	}
 	
 	
-	private static IPopulation spatializePopulation(GamaPopGenerator gen, IPopulation population) {
-	
+	private static IPopulation spatializePopulation(IScope scope, GamaPopGenerator gen, IPopulation population) {
 		File sfGeomsF = gen.getPathNestedGeometries() == null ? null : new File(gen.getPathNestedGeometries());
-		
-		if (sfGeomsF != null && !sfGeomsF.exists()) return population;
-		
-		SPLVectorFile sfGeoms = null;
-		SPLVectorFile sfCensus = null;
-
 		File sfCensusF = gen.getPathCensusGeometries() == null ? null : new File(gen.getPathCensusGeometries());
+
+		SPLVectorFile sfGeoms = null;
+		SPLVectorFile sfCensus = null;		
 		
+		if (sfGeomsF != null && !sfGeomsF.exists()) return population;			
+	 				
 		try {
-			sfGeoms = SPLGeofileBuilder.getShapeFile(sfGeomsF, null);
-			if (sfCensusF != null && sfCensusF.exists())
-				sfCensus = SPLGeofileBuilder.getShapeFile(sfCensusF, null);
+			if(sfGeomsF != null) {
+				sfGeoms = SPLGeofileBuilder.getShapeFile(sfGeomsF, null);
+				if(gen.getMaxDistanceLocalize() > 0.0) {
+					sfGeoms.minMaxDistance(gen.getMinDistanceLocalize(), gen.getMaxDistanceLocalize(), gen.isLocalizeOverlaps());				
+				}
+				// TODO limité aux geom ? ou aussi au census ?
+				gen.setCrs(sfGeoms.getWKTCoordinateReferentSystem());				
+			}
+			
+			if(sfCensusF != null) {			
+				sfCensus = SPLGeofileBuilder.getShapeFile(sfCensusF, null); 
+			}
 		} catch (IOException | InvalidGeoFormatException | GSIllegalRangedData e) {
-			e.printStackTrace();
-		} 
+			throw GamaRuntimeException.error(e.getMessage(), scope);
+		}
 		
-		gen.setCrs(sfGeoms.getWKTCoordinateReferentSystem());
+		// SETUP THE LOCALIZER
+		SPLocalizer localizer;		
+		if(sfGeoms != null) {
+			localizer = new SPLocalizer(population, sfGeoms);	
+			localizer.setDistribution(gen.getSpatialDistribution(sfGeoms));
+		} else {
+			localizer = new SPLocalizer(population, sfCensus);
+			localizer.setDistribution(gen.getSpatialDistribution(sfCensus));			
+		}
+		
+		// SETUP GEOGRAPHICAL MATCHER
+		// use of the IRIS attribute of the population
+		if (sfCensus != null) {
+			localizer.setMatcher(sfCensus, gen.getStringOfCensusIdInCSVfile(), gen.getStringOfCensusIdInShapefile());				
+		}				
+
+		// SETUP REGRESSION
 		List<IGSGeofile<? extends AGeoEntity<? extends IValue>, ? extends IValue>> endogeneousVarFile = new ArrayList<>();
-		for(String path : gen.getPathsRegressionData()){
+		for(String path : gen.getPathAncilaryGeofiles()){
 			try {
 				File pathF = new File(path);
 				if (pathF.exists())
 					endogeneousVarFile.add(new SPLGeofileBuilder().setFile(pathF).buildGeofile());
-			} catch (IllegalArgumentException | TransformException | IOException | InvalidGeoFormatException | GSIllegalRangedData e2) {
-				e2.printStackTrace();
+			} catch ( IOException | IllegalArgumentException | TransformException | InvalidGeoFormatException | GSIllegalRangedData e) {
+				e.printStackTrace();
 			}
-		}
+		}		
 		
-		
-		// SETUP THE LOCALIZER
-		// 2) SPUniformLocalizer est un SPLocalizer qui utilise une SPLinker avec une ISpatialDistribution uniforme 
-
-		//SPUniformLocalizer localizer = new SPUniformLocalizer(new SpllPopulation(population, sfGeoms));
-		// cf. Bangkok ... 
-		IGSGeofile<? extends AGeoEntity<? extends IValue>, IValue> geoFile = null;
-
-		SPLocalizer localizer = new SPLocalizer(population, geoFile);
-
-		// SETUP GEOGRAPHICAL MATCHER
-		// use of the IRIS attribute of the population
-		if (sfCensus != null)
-			localizer.setMatcher(sfCensus, gen.getStringOfCensusIdInCSVfile(), gen.getStringOfCensusIdInShapefile());
-		
-		// SETUP REGRESSION
 		if (endogeneousVarFile != null && !endogeneousVarFile.isEmpty())
 			try {
-				if (gen.getSpatialContingencyId() != null && !gen.getSpatialContingencyId().isEmpty()) {
-					localizer.setMapper(endogeneousVarFile.get(0), gen.getSpatialContingencyId());
+				// TODO cntingency ID ????? 
+//				if (gen.getSpatialContingencyId() != null && !gen.getSpatialContingencyId().isEmpty()) {
+//					localizer.setMapper(endogeneousVarFile.get(0), gen.getSpatialContingencyId());				
+//				}
+//				else 
+				if (sfCensus != null)
+					localizer.setMapper(endogeneousVarFile, new ArrayList<>(), new LMRegressionOLS(), new SPLUniformNormalizer(0, SPLRasterFile.DEF_NODATA));
 				
-				}
-				else if (sfCensus != null)
-					localizer.setMapper(endogeneousVarFile, new ArrayList<>(), 
-						new LMRegressionOLS(), new SPLUniformNormalizer(0, SPLRasterFile.DEF_NODATA));
-				
-			} catch (IndexOutOfBoundsException | IllegalRegressionException e) {
+			} catch (IndexOutOfBoundsException | IllegalRegressionException 
+					| IllegalArgumentException | IOException | TransformException 
+					| InterruptedException | ExecutionException | GSMapperException 
+					| SchemaException | InvalidGeoFormatException e) {
 				e.printStackTrace();
-			} catch (TransformException e) {
-				e.printStackTrace();
-			} catch (SchemaException e) {
-				e.printStackTrace();
-			} catch (GSMapperException e) {
-				e.printStackTrace();
-			} catch (InvalidGeoFormatException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
+			} 	
+		
 		//localize the population
-		return localizer.localisePopulation();
+		SpllPopulation localizedPop = localizer.localisePopulation();
+		
+		return localizedPop;
 	}
+	
+	
+	
+//	private static IPopulation spatializePopulation(GamaPopGenerator gen, IPopulation population) {
+//	
+//		File sfGeomsF = gen.getPathNestedGeometries() == null ? null : new File(gen.getPathNestedGeometries());
+//		
+//		if (sfGeomsF != null && !sfGeomsF.exists()) return population;
+//		
+//		SPLVectorFile sfGeoms = null;
+//		SPLVectorFile sfCensus = null;
+//
+//		File sfCensusF = gen.getPathCensusGeometries() == null ? null : new File(gen.getPathCensusGeometries());
+//		
+//		try {
+//			sfGeoms = SPLGeofileBuilder.getShapeFile(sfGeomsF, null);
+//			if (sfCensusF != null && sfCensusF.exists())
+//				sfCensus = SPLGeofileBuilder.getShapeFile(sfCensusF, null);
+//		} catch (IOException | InvalidGeoFormatException | GSIllegalRangedData e) {
+//			e.printStackTrace();
+//		} 
+//		
+//		gen.setCrs(sfGeoms.getWKTCoordinateReferentSystem());
+//		List<IGSGeofile<? extends AGeoEntity<? extends IValue>, ? extends IValue>> endogeneousVarFile = new ArrayList<>();
+//		for(String path : gen.getPathsRegressionData()){
+//			try {
+//				File pathF = new File(path);
+//				if (pathF.exists())
+//					endogeneousVarFile.add(new SPLGeofileBuilder().setFile(pathF).buildGeofile());
+//			} catch (IllegalArgumentException | TransformException | IOException | InvalidGeoFormatException | GSIllegalRangedData e2) {
+//				e2.printStackTrace();
+//			}
+//		}
+//		
+//		
+//		// SETUP THE LOCALIZER
+//		// 2) SPUniformLocalizer est un SPLocalizer qui utilise une SPLinker avec une ISpatialDistribution uniforme 
+//
+//		//SPUniformLocalizer localizer = new SPUniformLocalizer(new SpllPopulation(population, sfGeoms));
+//		// cf. Bangkok ... 
+//		IGSGeofile<? extends AGeoEntity<? extends IValue>, IValue> geoFile = null;
+//
+//		SPLocalizer localizer = new SPLocalizer(population, geoFile);
+//
+//		// SETUP GEOGRAPHICAL MATCHER
+//		// use of the IRIS attribute of the population
+//		if (sfCensus != null)
+//			localizer.setMatcher(sfCensus, gen.getStringOfCensusIdInCSVfile(), gen.getStringOfCensusIdInShapefile());
+//		
+//		// SETUP REGRESSION
+//		if (endogeneousVarFile != null && !endogeneousVarFile.isEmpty())
+//			try {
+//				if (gen.getSpatialContingencyId() != null && !gen.getSpatialContingencyId().isEmpty()) {
+//					localizer.setMapper(endogeneousVarFile.get(0), gen.getSpatialContingencyId());
+//				
+//				}
+//				else if (sfCensus != null)
+//					localizer.setMapper(endogeneousVarFile, new ArrayList<>(), 
+//						new LMRegressionOLS(), new SPLUniformNormalizer(0, SPLRasterFile.DEF_NODATA));
+//				
+//			} catch (IndexOutOfBoundsException | IllegalRegressionException e) {
+//				e.printStackTrace();
+//			} catch (TransformException e) {
+//				e.printStackTrace();
+//			} catch (SchemaException e) {
+//				e.printStackTrace();
+//			} catch (GSMapperException e) {
+//				e.printStackTrace();
+//			} catch (InvalidGeoFormatException e) {
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//
+//		//localize the population
+//		return localizer.localisePopulation();
+//	}
 	
 }
