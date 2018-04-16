@@ -13,9 +13,16 @@ global {
 	file f_ASCSP <- file("../data/Age & Sexe & CSP-Tableau 1.csv");
 	file f_IRIS <- file("../data/Rouen_iris.csv");
 
-	file bd_shp <- file("../data/shp/buildings.shp");
-	file district_shp <- file("../data/shp/Rouen_iris_number.shp");
-	geometry shape <- envelope(bd_shp);
+	// String constants
+	file iris_shp <- file("../data/shp/Rouen_iris_number.shp");
+	
+	//name of the property that contains the id of the census spatial areas in the shapefile
+	string stringOfCensusIdInShapefile <- "CODE_IRIS";
+
+	//name of the property that contains the id of the census spatial areas in the csv file (and population)
+	string stringOfCensusIdInCSVfile <- "iris";
+
+	geometry shape <- envelope(iris_shp);
 
 	list<string> tranches_age <- ["Moins de 5 ans", "5 à 9 ans", "10 à 14 ans", "15 à 19 ans", "20 à 24 ans", 
 				  				"25 à 29 ans", "30 à 34 ans", "35 à 39 ans", "40 à 44 ans", "45 à 49 ans", 
@@ -28,8 +35,7 @@ global {
 
 	
 	init {		
-		create building from: bd_shp ;
-		create district from: district_shp with: [code_iris::string(read('CODE_IRIS'))];			
+		create iris from: iris_shp with: [code_iris::string(read('CODE_IRIS'))];			
 		
 		gen_population_generator pop_gen;
 		pop_gen <- pop_gen with_generation_algo "IS";  //"Sample";//"IS";
@@ -104,10 +110,14 @@ global {
 		pop_gen <- pop_gen add_attribute("iris", string, liste_iris, "P13_POP", int);  
 
 
-				
-		create people from: pop_gen number: 10000 {
-			location <- any_location_in(first(district where(each.code_iris = iris)));
-		}
+		// -------------------------
+		// Spatialization 
+		// -------------------------
+		pop_gen <- pop_gen localize_on_census(iris_shp.path);
+		pop_gen <- pop_gen add_spatial_mapper(stringOfCensusIdInCSVfile,stringOfCensusIdInShapefile);
+
+		// -------------------------			
+		create people from: pop_gen number: 10000 ;
 	}
 }
 
@@ -123,13 +133,7 @@ species people {
 	}
 }
 
-species building {
-	aspect default {
-		draw shape color: #gray border: #black;
-	}
-}
-
-species district {
+species iris {
 	string code_iris;
 	rgb color <- rnd_color(255);
 	aspect default {
@@ -140,33 +144,32 @@ species district {
 experiment Rouentemplate type: gui {
 	output {
 		display map scale: true type: opengl {
-			species district;
-			species building;			
+			species iris;
 			species people;
 		}
 		
-		display c {
-			chart "ages" type: histogram {
-				loop i from: 0 to: 110 {
-					data ""+i value: people count(each.Age = i);
-				}
-			}
-		}
-		
-		display chart_csp {
-			chart "csp" type: histogram {
-				loop csp over: list_CSP {
-					data ""+csp value: people count(each.CSP = csp);
-				}
-			}
-		}		
-		
-		display s {
-			chart "sex" type: pie {
-				loop se over: ["Hommes", "Femmes"] {
-					data se value: people count(each.Sexe = se);
-				}
-			}
-		}
+//		display c {
+//			chart "ages" type: histogram {
+//				loop i from: 0 to: 110 {
+//					data ""+i value: people count(each.Age = i);
+//				}
+//			}
+//		}
+//		
+//		display chart_csp {
+//			chart "csp" type: histogram {
+//				loop csp over: list_CSP {
+//					data ""+csp value: people count(each.CSP = csp);
+//				}
+//			}
+//		}		
+//		
+//		display s {
+//			chart "sex" type: pie {
+//				loop se over: ["Hommes", "Femmes"] {
+//					data se value: people count(each.Sexe = se);
+//				}
+//			}
+//		}
 	}
 }
