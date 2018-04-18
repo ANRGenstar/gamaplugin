@@ -16,6 +16,7 @@ import core.metamodel.attribute.Attribute;
 import core.metamodel.attribute.MappedAttribute;
 import core.metamodel.entity.ADemoEntity;
 import core.metamodel.value.IValue;
+import core.util.random.GenstarRandomUtils;
 import main.java.gama.genstar.plugin.operators.GenstarGenerationOperators;
 import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import main.java.gama.genstar.plugin.type.GamaPopGeneratorType;
@@ -115,7 +116,10 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
                 			throw GamaRuntimeException.error("Neither the attribute " + attribute.getAttributeName() + ", nor its referent attribute " + 
                 							referent_attribute.getAttributeName() +"are defined in the species " + gama_pop.getSpecies().getName(), scope);
         				} else {
-                    		attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForReferentAttributeOf((MappedAttribute) attribute), true, var.getType());		
+        					
+        					Collection<? extends IValue> possibleValues = attribute.findMappedAttributeValues(e.getValueForAttribute(attribute));
+        					
+                    		attributeValue = GenStarGamaUtils.toGAMAValue(scope, GenstarRandomUtils.oneOf(possibleValues), true, var.getType());		
                     		attributeToPut = referent_attribute;
         				}
         			} else {
