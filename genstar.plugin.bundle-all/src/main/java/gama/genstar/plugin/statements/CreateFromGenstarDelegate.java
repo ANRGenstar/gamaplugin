@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class CreateFromDatabaseDelegate.
+ * Class CreateFromGenstarDelegate.
  *
  * @author Patrick Taillandier
  * @since 30 january 2017
@@ -81,6 +81,9 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 		GamaPopGenerator gen = (GamaPopGenerator) source;
 		if (number == null) number = -1;
 		IPopulation<? extends ADemoEntity, Attribute<? extends IValue>> population = GenstarGenerationOperators.generatePop(scope, gen, number);
+		
+		// TODO : check if it is used 
+		gen.setGeneratedPopulation(population);
 		
 		// Used to transform the GamaRange into a GAMA value...
 		IAgent executor = scope.getAgent();

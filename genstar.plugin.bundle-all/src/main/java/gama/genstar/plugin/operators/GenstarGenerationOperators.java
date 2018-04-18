@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,8 @@ import msi.gama.util.GamaMapFactory;
 import msi.gama.util.IList;
 import msi.gaml.operators.Spatial;
 import msi.gaml.types.Types;
+import spin.SpinPopulation;
+import spin.algo.generator.ISpinNetworkGenerator;
 import spll.SpllEntity;
 import spll.SpllPopulation;
 import spll.algo.LMRegressionOLS;
@@ -180,10 +183,13 @@ public class GenstarGenerationOperators {
 		////////////////////////////////////////////////////////////////////////
 		// Spin generation
 		////////////////////////////////////////////////////////////////////////      
+       if (gen.isSocialPopulation())
+			population = socializePopulation(scope, gen, population);
        
 		return population;
 	}
-	
+
+
 	@operator(value = "generate_localized_entities", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	@doc(value = "generate a spatialized population taking the form of a list of geometries while trying to infer the entities number from the data", examples = @example(value = "generateLocalizedEntities(my_pop_generator)", test = false))
 	public static IList<IShape> generateLocalizedEntities(final IScope scope,GamaPopGenerator gen) {
@@ -432,24 +438,21 @@ public class GenstarGenerationOperators {
 //				
 //			} catch (IndexOutOfBoundsException | IllegalRegressionException e) {
 //				e.printStackTrace();
-//			} catch (TransformException e) {
-//				e.printStackTrace();
-//			} catch (SchemaException e) {
-//				e.printStackTrace();
-//			} catch (GSMapperException e) {
-//				e.printStackTrace();
-//			} catch (InvalidGeoFormatException e) {
-//				e.printStackTrace();
-//			} catch (ExecutionException e) {
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
+//			} 
 //
 //		//localize the population
 //		return localizer.localisePopulation();
 //	}
+	
+	
+	private static IPopulation socializePopulation(IScope scope, GamaPopGenerator gen, IPopulation population) {
+		SpinPopulation socializedPop = new SpinPopulation<>(population);
+		
+		for(Entry<String,ISpinNetworkGenerator> e : gen.getNetworkGenerators().entrySet()) {
+			socializedPop.addNetwork(e.getKey(), e.getValue().generate(population));
+		}	
+		
+		return socializedPop;
+	}	
 	
 }

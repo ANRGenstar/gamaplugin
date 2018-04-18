@@ -1,5 +1,6 @@
 package main.java.gama.genstar.plugin.utils;
 
+import core.metamodel.IPopulation;
 import core.metamodel.io.GSSurveyType;
 import core.metamodel.value.IValue;
 import core.metamodel.value.binary.BooleanValue;
@@ -7,10 +8,13 @@ import core.metamodel.value.numeric.ContinuousValue;
 import core.metamodel.value.numeric.IntegerValue;
 import core.metamodel.value.numeric.RangeValue;
 import core.util.data.GSEnumDataType;
+import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import main.java.gama.genstar.plugin.type.GamaRange;
 import main.java.gama.genstar.plugin.type.GamaRangeType;
 import msi.gama.runtime.IScope;
+import msi.gama.util.graph.GamaGraph;
 import msi.gaml.types.IType;
+import spin.SpinNetwork;
 
 public class GenStarGamaUtils {
 	public static GSSurveyType toSurveyType(String type) {
@@ -82,5 +86,15 @@ public class GenStarGamaUtils {
 		}
 		return gamaValue;
 	}
+	
+	
+	public static GamaGraph toGAMAGraph(IScope scope, SpinNetwork net, GamaPopGenerator gen) {
+	//	GamaGraph network = new GamaGraph<>(scope, nodeType, vertexType)
+	//	GamaGraph network = new GamaGraph(scope, net.isDirected(), IType.AGENT, IType.NONE);
+		
+		//new GamaGraph()
+		
+		return null;
+	}	
 	
 }
