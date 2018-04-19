@@ -1,3 +1,64 @@
+# Temporary install procedure in GAMA
+
+This install procedure has been tested the 19th of April 2018. It has many drawbacks (copy-paste of jars, incompatible with the continuous built, use of very heavy jars for genstar, with duplicated libraries, Eclipse-dependent...) but has the main advantage to integrate very well in a classical IDE for GAMA. So it is only temporary!
+
+To use and develop the Genstar Plugin in GAMA, you need:
+- GAMA in its development version
+- the genstar library
+- the genstar GAMA plugin
+
+
+# 1. Install Eclipse and GAMA source code
+cf. as presented here: https://github.com/gama-platform/gama/wiki/InstallingGitVersion
+
+# 2. Get the source code of the genstar library and genstar plugin.
+
+Clone the following GitHub repository Github: 
+ * the genstar library:  https://github.com/ANRGenstar/genstar.git
+ * [Optional] the genstar templates (i.e. examples): https://github.com/ANRGenstar/template.git
+ * the gama plugin: https://github.com/ANRGenstar/gamaplugin.git
+
+With Eclipse: 
+* Open the Git perspective
+* In the View Git Repositories, Click on the icon "Clone a Git Repository and add the clone to this view"
+
+In the View Git Repositories, you should have 4 repositories: gama, gamaplugin, genstar and template.
+
+# 3. Import the genstar library as Eclipse projects.
+ * File > Import ...
+ * [Window: Import] Select: Git / Projects from Git (Click on Next button)
+ * [Window: Import Project from Git] Select: Existing local repository (Next)
+ * [Window: Import Projects from Git] Select: genstar (Next)
+ * [Window: Import Projects from Git] "Import existing Eclipse projects" should be checked and "Working Tree" selected (Next)
+ * [Window: Import Projects from Git] Check "Search for nested projects", select the 5 projects (genstar-core, genstar-gospl, genstar-spin, genstar-spll and parent) (Finish)
+
+
+# 4. Import the genstar plugin as Eclipse projects.
+ * File > Import ...
+ * [Window: Import] Select: Git / Projects from Git (Click on Next button)
+ * [Window: Import Project from Git] Select: Existing local repository (Next)
+ * [Window: Import Projects from Git] Select: gamaplugin (Next)
+ * [Window: Import Projects from Git] "Import existing Eclipse projects" should be checked and "Working Tree" selected (Next)
+ * [Window: Import Projects from Git] Check "Search for nested projects", select the last project (genstar.plugin.bundle-all, the last one, the deepest one, among the 2 available) (Finish)
+
+# 5. Import the template as Eclipse projects. (similarly)
+
+# 6. Associate genstar library with the GAMA plugin.
+  * in the genstar.plugin.bundle-all plugin, create a folder lib.
+  * Right-click on the parent plugin > Run As >  Maven install
+  * in the 4 genstar projects (genstar-core, -gospl, -spll, -spin), in the target folder, take the genstar-*-jar-with-dependencies.jar and paste it in the plugin lib folder.
+
+# 7. Ask GAMA to call the plugin at start
+  * In ummisco.gama.feature.core.extensions plugin, feature.xml, add the genstar plugin to the Included Plug-ins
+
+
+
+
+# 
+# 
+
+Below are the old install instructions. 
+
 # Plugin Genstar for GAMA platform simulation.
 
 [![Build Status](https://travis-ci.org/ANRGenstar/gamaplugin.svg?branch=master)](https://travis-ci.org/ANRGenstar/gamaplugin)
