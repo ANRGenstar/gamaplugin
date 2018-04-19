@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Bundle-all
+Bundle-SymbolicName: genstar.plugin.bundle-all;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: msi.gama.core;bundle-version="1.7.0",
+ msi.gama.ext;bundle-version="1.7.0"
+Export-Package: main.java.gama.genstar.plugin
+Bundle-ClassPath: lib/genstar-core-1.0.3-jar-with-dependencies.jar,
+ lib/genstar-gospl-1.0.3-jar-with-dependencies.jar,
+ lib/genstar-spin-1.0.3-jar-with-dependencies.jar,
+ lib/genstar-spll-1.0.3-jar-with-dependencies.jar,
+ .
