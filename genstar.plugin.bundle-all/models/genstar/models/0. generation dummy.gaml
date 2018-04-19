@@ -9,9 +9,9 @@ model Test
 
 global {
 	init {
-		write default_generation(40);
+		write dummy_generator(40);
 		
-		create people from: default_generation(10);
+		create people from: dummy_generator(10);
 		
 		write people accumulate(each.iris);
 	}
