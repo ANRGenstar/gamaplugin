@@ -22,11 +22,12 @@ global {
 	geometry shape <- envelope(iris_shp);
 
 	graph<people> graph_friends;
+gen_population_generator pop_gen;
 
 	init {		
 		create iris_agent from: iris_shp with: [code_iris::string(read('CODE_IRIS'))];			
 		
-		gen_population_generator pop_gen;
+		// gen_population_generator pop_gen;
 		pop_gen <- pop_gen with_generation_algo "IS";  //"Sample";//"IS";
 
 		pop_gen <- add_census_file(pop_gen, f_IRIS.path, "ContingencyTable", ",", 1, 1);			
@@ -62,9 +63,9 @@ global {
 
 
 		// -------------------------			
-		create people from: pop_gen number: 100 ;
+		create people from: pop_gen number: 10000 ;
 		pop_gen <- pop_gen associate_population_agents(people);
-	//	graph_friends <- pop_gen get_graph("friends");		
+		graph_friends <- pop_gen get_graph("friends");		
 	}
 }
 
@@ -73,7 +74,10 @@ species people {
 	rgb color <- first(iris_agent where (each.code_iris = iris)).color;
 
 	aspect default { 
-		draw circle(4) color: color border: #black;
+		draw circle(20) color: color border: #black;
+		loop neigh over: graph_friends neighbors_of(self) {
+			draw line([self.location,people(neigh).location]) color: #black;
+		}
 	}
 }
 

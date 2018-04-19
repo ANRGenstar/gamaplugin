@@ -31,14 +31,13 @@ import msi.gama.util.IList;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 import spin.SpinNetwork;
+import spin.SpinPopulation;
 import spin.algo.generator.ISpinNetworkGenerator;
 import spll.io.SPLVectorFile;
 import spll.popmapper.distribution.ISpatialDistribution;
 import spll.popmapper.distribution.SpatialDistributionFactory;
 
 import java.util.*;
-
-import org.graphstream.graph.Node;
 
 
 
@@ -54,8 +53,7 @@ import org.graphstream.graph.Node;
 })
 public class GamaPopGenerator implements IValue {
 
-	IPopulation<?, ?> generatedPopulation;
-	Map<ADemoEntity, IAgent> mapEntitiesAgent;
+	IPopulation generatedPopulation;
 	
 	//////////////////////////////////////////////
 	// Attirbute for the Gospl generation
@@ -92,12 +90,14 @@ public class GamaPopGenerator implements IValue {
 //	
 //	List<String> pathsRegressionData;
 //	
+//	pathsRegressionData = new ArrayList<>();
+//	inputKeyMap = new HashMap<>();	
 
 	//////////////////////////////////////////////
-	// Attirbute for the Spin generation
+	// Attribute for the Spin generation
 	//////////////////////////////////////////////
 	HashMap<String, ISpinNetworkGenerator> networkGenerators;
-	HashMap<String, SpinNetwork> networks;
+	Map<ADemoEntity, IAgent> mapEntitiesAgent;
 
 
 	public GamaPopGenerator() {
@@ -108,14 +108,9 @@ public class GamaPopGenerator implements IValue {
 		minDistanceLocalize = 0.0;
 		maxDistanceLocalize = 0.0;
 		localizeOverlaps = false;
-		pathAncilaryGeofiles = new ArrayList<>();
-		
-//		pathsRegressionData = new ArrayList<>();
-//		inputKeyMap = new HashMap<>();		
+		pathAncilaryGeofiles = new ArrayList<>();	
 	
-		networkGenerators = new HashMap<>();
-		networks = new HashMap<>();
-		
+		networkGenerators = new HashMap<>();		
 		mapEntitiesAgent = new HashMap<>();
 	}
 	
@@ -380,14 +375,13 @@ public class GamaPopGenerator implements IValue {
 	}
 
 
-	public void addNetwork(String graphName, SpinNetwork network) {
-		networks.put(graphName, network);
-	}	
+//	public void addNetwork(String graphName, SpinNetwork network) {
+//		networks.put(graphName, network);
+//	}	
 	
 	public void addNetworkGenerator(String graphName, ISpinNetworkGenerator graphGenerator) {
 		networkGenerators.put(graphName, graphGenerator);
 	}
-	
 	
 	public HashMap<String, ISpinNetworkGenerator> getNetworkGenerators() {
 		return networkGenerators;
@@ -398,22 +392,15 @@ public class GamaPopGenerator implements IValue {
 		this.networkGenerators = networksGenerator;
 	}
 
-
-	public HashMap<String, SpinNetwork> getNetworks() {
-		return networks;
-	}
-
-
-	public void setNetworks(HashMap<String, SpinNetwork> networks) {
-		this.networks = networks;
-	}	
-
 	public ISpinNetworkGenerator getNetworkGenerator(String networkName) {
 		return networkGenerators.get(networkName);
 	}	
 	
 	public SpinNetwork getNetwork(String networkName) {
-		return networks.get(networkName);
+		if(isSocialPopulation()) {
+			return ((SpinPopulation)generatedPopulation).getNetwork(networkName);	
+		} else 
+			return null;
 	}
 
 	public void setGeneratedPopulation(IPopulation population) {
@@ -423,8 +410,16 @@ public class GamaPopGenerator implements IValue {
 		return generatedPopulation;
 	}
 	
-	public void add(ADemoEntity e, IAgent a) {
+	public void addAgent(ADemoEntity e, IAgent a) {
 		mapEntitiesAgent.put(e, a);	
+	}
+
+	public IAgent getAgent(ADemoEntity e) {
+		return mapEntitiesAgent.get(e);
+	}
+	
+	public Collection<IAgent> getAgents() {
+		return mapEntitiesAgent.values();
 	}
 	
 /*	

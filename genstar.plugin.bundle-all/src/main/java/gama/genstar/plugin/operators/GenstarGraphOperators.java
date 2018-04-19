@@ -2,15 +2,14 @@ package main.java.gama.genstar.plugin.operators;
 
 import core.metamodel.entity.ADemoEntity;
 import main.java.gama.genstar.plugin.type.GamaPopGenerator;
+import main.java.gama.genstar.plugin.utils.GenStarGamaUtils;
 import msi.gama.metamodel.agent.IAgent;
-import msi.gama.metamodel.population.GamaPopulation;
 import msi.gama.precompiler.GamlAnnotations.operator;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
-import msi.gama.util.IContainer;
-import msi.gama.util.graph.GamaGraph;
+import msi.gama.util.graph.IGraph;
 import msi.gaml.species.GamlSpecies;
-import msi.gaml.species.ISpecies;
+import spin.SpinNetwork;
 import spin.algo.factory.SpinNetworkFactory;
 
 public class GenstarGraphOperators {
@@ -19,10 +18,11 @@ public class GenstarGraphOperators {
 		gen.addNetworkGenerator(graphName, SpinNetworkFactory.getInstance().getSpinPopulationGenerator(graphName, graphGenerator));
 		return gen;
 	}
-	
-	public static GamaGraph get_graph(IScope scope, GamaPopGenerator gen, String networkName) {
-		return null;
-		//return gen.getNetwork(networkName);
+
+	@operator(value = "get_graph", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+	public static IGraph get_graph(IScope scope, GamaPopGenerator gen, String networkName) {
+		SpinNetwork net = gen.getNetwork(networkName);		
+		return GenStarGamaUtils.toGAMAGraph(scope, net, gen);
 	}
 	
 	@operator(value = "associate_population_agents", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})	
@@ -32,7 +32,7 @@ public class GenstarGraphOperators {
 		
 		for(int i = 0 ; i < pop.getPopulation(scope).length(scope) ; i ++) {			
 			IAgent agt = pop.getPopulation(scope).getAgent(i);
-			gen.add( (ADemoEntity) entity[i], agt);
+			gen.addAgent( (ADemoEntity) entity[i], agt);
 		}
 		return gen;
 	}	

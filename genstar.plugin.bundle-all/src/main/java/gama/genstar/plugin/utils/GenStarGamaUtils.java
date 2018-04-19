@@ -1,5 +1,9 @@
 package main.java.gama.genstar.plugin.utils;
 
+import java.util.Set;
+
+import org.graphstream.graph.Edge;
+
 import core.metamodel.IPopulation;
 import core.metamodel.io.GSSurveyType;
 import core.metamodel.value.IValue;
@@ -11,9 +15,14 @@ import core.util.data.GSEnumDataType;
 import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import main.java.gama.genstar.plugin.type.GamaRange;
 import main.java.gama.genstar.plugin.type.GamaRangeType;
+import msi.gama.metamodel.agent.IAgent;
+import msi.gama.metamodel.topology.graph.GamaSpatialGraph.VertexRelationship;
 import msi.gama.runtime.IScope;
+import msi.gama.util.IContainer;
 import msi.gama.util.graph.GamaGraph;
+import msi.gaml.species.ISpecies;
 import msi.gaml.types.IType;
+import msi.gaml.types.Types;
 import spin.SpinNetwork;
 
 public class GenStarGamaUtils {
@@ -89,12 +98,24 @@ public class GenStarGamaUtils {
 	
 	
 	public static GamaGraph toGAMAGraph(IScope scope, SpinNetwork net, GamaPopGenerator gen) {
-	//	GamaGraph network = new GamaGraph<>(scope, nodeType, vertexType)
-	//	GamaGraph network = new GamaGraph(scope, net.isDirected(), IType.AGENT, IType.NONE);
+		if(gen.getAgents().isEmpty())
+			return null;
 		
-		//new GamaGraph()
+		IType nodeType = gen.getAgents().stream().findFirst().orElse(null).getType(); 	
+		GamaGraph gamaNetwork = new GamaGraph(scope, net.isDirected(),nodeType,Types.GEOMETRY);
 		
-		return null;
+		for(IAgent agt : gen.getAgents()) {
+			gamaNetwork.addVertex(agt);
+		}
+		
+		for(Edge e : net.getLinks()) {
+			IAgent sourceAgt = gen.getAgent(net.getDemoEntityNode(e.getNode0()));
+			IAgent targetAgt = gen.getAgent(net.getDemoEntityNode(e.getNode1()));
+			
+			gamaNetwork.addEdge(sourceAgt, targetAgt);
+		}
+
+		return gamaNetwork;
 	}	
 	
 }
