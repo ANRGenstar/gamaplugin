@@ -98,7 +98,8 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
         if (number > 0 && number < es.size()) es = scope.getRandom().shuffle(es);
         for (final ADemoEntity e : es) {
         	final Map map = (Map) GamaMapFactory.create();
-        	if (population instanceof SpllPopulation) {
+        	//if (population instanceof SpllPopulation) {
+        	if (e instanceof SpllEntity) {	
         		SpllEntity spllE = (SpllEntity) e;
         		if (spllE.getLocation() == null) continue;
         		map.put(IKeyword.SHAPE, new GamaShape(gen.getCrs() != null
