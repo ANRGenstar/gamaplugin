@@ -8,6 +8,8 @@
 model Rouentemplate
 
 global {
+	
+	
 	file f_AC <- file("../data/Age & Couple-Tableau 1.csv");	
 	file f_AS <- file("../data/Age & Sexe-Tableau 1.csv");
 	file f_ASCSP <- file("../data/Age & Sexe & CSP-Tableau 1.csv");
@@ -15,6 +17,8 @@ global {
 
 	// String constants
 	file iris_shp <- file("../data/shp/Rouen_iris_number.shp");
+	file buildings_shp <- file("../data/shp/buildings.shp");
+	
 	
 	//name of the property that contains the id of the census spatial areas in the shapefile
 	string stringOfCensusIdInShapefile <- "CODE_IRIS";
@@ -33,8 +37,23 @@ global {
 							"Cadres et professions intellectuelles supérieures", "Professions intermédiaires", 
 							"Employés", "Ouvriers", "Retraités", "Autres personnes sans activité professionnelle"];
 
-	
-	init {		
+	list<string> liste_iris <- [
+		"765400602", "765400104","765400306","765400201",
+		"765400601","765400901","765400302","765400604","765400304",
+		"765400305","765400801","765400301","765401004","765401003",
+		"765400402","765400603","765400303","765400103","765400504",
+		"765401006","765400702","765400401","765400202","765400802",
+		"765400502","765400106","765400701","765401005","765400204",
+		"765401001","765400405","765400501","765400102","765400503",
+		"765400404","765400105","765401002","765400902","765400403",
+		"765400203","765400101","765400205"];
+
+	graph<people> graph_friends;
+	graph<people> graph_colleagues;
+
+				
+	init {	
+		create building from: buildings_shp ;				
 		create iris from: iris_shp with: [code_iris::string(read('CODE_IRIS'))];			
 		
 		gen_population_generator pop_gen;
@@ -45,15 +64,10 @@ global {
 		pop_gen <- add_census_file(pop_gen, f_AS.path, "ContingencyTable", ";", 1, 1);
 		pop_gen <- add_census_file(pop_gen, f_IRIS.path, "ContingencyTable", ",", 1, 1);			
 		
-//		pop_gen <- add_census_file(pop_gen, "../data/Age & Couple-Tableau 1eee.csv", "ContingencyTable", ";", 1, 1); 
-//		pop_gen <- add_census_file(pop_gen, "../data/Age & Sexe & CSP-Tableau 1.csv", "ContingencyTable", ";", 2, 1);
-//		pop_gen <- add_census_file(pop_gen, "../data/Age & Sexe-Tableau 1.csv", "ContingencyTable", ";", 1, 1);
-//		pop_gen <- add_census_file(pop_gen, "../data/Rouen_iris.csv", "ContingencyTable", ",", 1, 1);		
-
+		
 		// --------------------------
 		// Setup "AGE" attribute: INDIVIDUAL
-		// --------------------------	
-			
+		// --------------------------		
 		
 		pop_gen <- pop_gen add_attribute("Age", gen_range, tranches_age);
 		
@@ -97,27 +111,29 @@ global {
 		// Setup "IRIS" attribute: INDIVIDUAL
 		// -------------------------
 
-		list<string> liste_iris <- [
-			"765400602", "765400104","765400306","765400201",
-			"765400601","765400901","765400302","765400604","765400304",
-			"765400305","765400801","765400301","765401004","765401003",
-			"765400402","765400603","765400303","765400103","765400504",
-			"765401006","765400702","765400401","765400202","765400802",
-			"765400502","765400106","765400701","765401005","765400204",
-			"765401001","765400405","765400501","765400102","765400503",
-			"765400404","765400105","765401002","765400902","765400403",
-			"765400203","765400101","765400205"];
 		pop_gen <- pop_gen add_attribute("iris", string, liste_iris, "P13_POP", int);  
 
 
 		// -------------------------
 		// Spatialization 
 		// -------------------------
+		pop_gen <- pop_gen localize_on_geometries(buildings_shp.path);
 		pop_gen <- pop_gen localize_on_census(iris_shp.path);
 		pop_gen <- pop_gen add_spatial_mapper(stringOfCensusIdInCSVfile,stringOfCensusIdInShapefile);
 
+		// -------------------------
+		// Social 
+		// -------------------------
+		pop_gen <- pop_gen add_network("friends","spatial",1000.0);
+		pop_gen <- pop_gen add_network("colleagues","random",0.02);
+		
+
 		// -------------------------			
-		create people from: pop_gen number: 10000 ;
+		create people from: pop_gen number: 100 ;
+		pop_gen <- pop_gen associate_population_agents(people);
+		graph_friends <- pop_gen get_network("friends");			
+		graph_colleagues <- pop_gen get_network("colleagues");			
+		
 	}
 }
 
@@ -130,6 +146,12 @@ species people {
 
 	aspect default { 
 		draw circle(4) color: #red border: #black;
+		loop neigh over: graph_friends neighbors_of(self) {
+			draw line([self.location,people(neigh).location]) color: #blue;
+		}
+		loop neigh over: graph_colleagues neighbors_of(self) {
+			draw line([self.location,people(neigh).location]) color: #red;
+		}		
 	}
 }
 
@@ -137,7 +159,14 @@ species iris {
 	string code_iris;
 	rgb color <- rnd_color(255);
 	aspect default {
-		draw shape color:color  border: #black;
+		draw shape color:color  border: #black;		
+	}
+}
+
+species building {
+	
+	aspect default {
+		draw shape color:#lightgrey  border: #black;
 	}
 }
 
@@ -145,6 +174,7 @@ experiment Rouentemplate type: gui {
 	output {
 		display map scale: true type: opengl {
 			species iris;
+			species building;
 			species people;
 		}
 		

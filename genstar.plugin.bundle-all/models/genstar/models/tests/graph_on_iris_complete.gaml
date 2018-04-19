@@ -59,13 +59,13 @@ gen_population_generator pop_gen;
 		// -------------------------
 		// Social 
 		// -------------------------
-		pop_gen <- pop_gen add_graph("friends","complete");
+		pop_gen <- pop_gen add_network("friends","complete");
 
 
 		// -------------------------			
-		create people from: pop_gen number: 10000 ;
+		create people from: pop_gen number: 20 ;
 		pop_gen <- pop_gen associate_population_agents(people);
-		graph_friends <- pop_gen get_graph("friends");		
+		graph_friends <- pop_gen get_network("friends");		
 	}
 }
 
