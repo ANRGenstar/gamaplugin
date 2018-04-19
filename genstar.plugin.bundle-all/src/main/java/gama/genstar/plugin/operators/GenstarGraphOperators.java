@@ -13,13 +13,13 @@ import spin.SpinNetwork;
 import spin.algo.factory.SpinNetworkFactory;
 
 public class GenstarGraphOperators {
-	@operator(value = "add_graph", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+	@operator(value = "add_network", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	public static GamaPopGenerator addGraphGenerator(IScope scope, GamaPopGenerator gen, String graphName, String graphGenerator) throws GamaRuntimeException {
 		gen.addNetworkGenerator(graphName, SpinNetworkFactory.getInstance().getSpinPopulationGenerator(graphName, graphGenerator));
 		return gen;
 	}
 
-	@operator(value = "get_graph", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+	@operator(value = "get_network", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	public static IGraph get_graph(IScope scope, GamaPopGenerator gen, String networkName) {
 		SpinNetwork net = gen.getNetwork(networkName);		
 		return GenStarGamaUtils.toGAMAGraph(scope, net, gen);

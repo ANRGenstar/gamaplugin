@@ -11,7 +11,6 @@ import core.metamodel.attribute.Attribute;
 import core.metamodel.attribute.AttributeFactory;
 import core.metamodel.io.GSSurveyWrapper;
 import core.metamodel.value.IValue;
-import core.util.data.GSEnumDataType;
 import core.util.excpetion.GSIllegalRangedData;
 import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import main.java.gama.genstar.plugin.utils.GenStarGamaUtils;

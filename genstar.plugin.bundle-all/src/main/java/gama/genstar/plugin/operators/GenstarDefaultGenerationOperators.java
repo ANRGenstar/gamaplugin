@@ -20,9 +20,9 @@ import msi.gama.util.IList;
 public class GenstarDefaultGenerationOperators {
 	
 	@SuppressWarnings({ "unchecked" })	
-	@operator(value = "default_generation")
+	@operator(value = "dummy_generator")
 	@doc("Generate N individuals of a simple population, randomly spatialized with a single attribute, iris, with values in  \"765400102\", \"765400101\" ")
-	public static IList<IShape> defaultPopGeneration(IScope scope, Integer number) {
+	public static IList<IShape> dummyPopGeneration(IScope scope, Integer number) {
 		IPopulation<ADemoEntity, Attribute<? extends IValue>> pop;
 		
 		AttributeDictionary atts = new AttributeDictionary();

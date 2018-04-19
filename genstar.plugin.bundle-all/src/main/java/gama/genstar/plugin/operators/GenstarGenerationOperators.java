@@ -448,7 +448,7 @@ public class GenstarGenerationOperators {
 	private static IPopulation socializePopulation(IScope scope, GamaPopGenerator gen, IPopulation population) {
 		SpinPopulation socializedPop = new SpinPopulation<>(population);
 		
-		for(Entry<String,ISpinNetworkGenerator> e : gen.getNetworkGenerators().entrySet()) {
+		for(Entry<String,ISpinNetworkGenerator<? extends ADemoEntity>> e : gen.getNetworkGenerators().entrySet()) {
 			socializedPop.addNetwork(e.getKey(), e.getValue().generate(population));
 		}	
 		

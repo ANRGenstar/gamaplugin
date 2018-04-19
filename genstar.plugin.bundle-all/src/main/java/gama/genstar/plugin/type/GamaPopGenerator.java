@@ -53,7 +53,7 @@ import java.util.*;
 })
 public class GamaPopGenerator implements IValue {
 
-	IPopulation generatedPopulation;
+	IPopulation<? extends ADemoEntity, ?> generatedPopulation;
 	
 	//////////////////////////////////////////////
 	// Attirbute for the Gospl generation
@@ -96,7 +96,7 @@ public class GamaPopGenerator implements IValue {
 	//////////////////////////////////////////////
 	// Attribute for the Spin generation
 	//////////////////////////////////////////////
-	HashMap<String, ISpinNetworkGenerator> networkGenerators;
+	HashMap<String, ISpinNetworkGenerator<? extends ADemoEntity>> networkGenerators;
 	Map<ADemoEntity, IAgent> mapEntitiesAgent;
 
 
@@ -379,34 +379,34 @@ public class GamaPopGenerator implements IValue {
 //		networks.put(graphName, network);
 //	}	
 	
-	public void addNetworkGenerator(String graphName, ISpinNetworkGenerator graphGenerator) {
+	public void addNetworkGenerator(String graphName, ISpinNetworkGenerator<? extends ADemoEntity> graphGenerator) {
 		networkGenerators.put(graphName, graphGenerator);
 	}
 	
-	public HashMap<String, ISpinNetworkGenerator> getNetworkGenerators() {
+	public HashMap<String, ISpinNetworkGenerator<? extends ADemoEntity>> getNetworkGenerators() {
 		return networkGenerators;
 	}
 
 
-	public void setNetworksGenerator(HashMap<String, ISpinNetworkGenerator> networksGenerator) {
+	public void setNetworksGenerator(HashMap<String, ISpinNetworkGenerator<? extends ADemoEntity>> networksGenerator) {
 		this.networkGenerators = networksGenerator;
 	}
 
-	public ISpinNetworkGenerator getNetworkGenerator(String networkName) {
+	public ISpinNetworkGenerator<? extends ADemoEntity> getNetworkGenerator(String networkName) {
 		return networkGenerators.get(networkName);
 	}	
 	
 	public SpinNetwork getNetwork(String networkName) {
 		if(isSocialPopulation()) {
-			return ((SpinPopulation)generatedPopulation).getNetwork(networkName);	
+			return ((SpinPopulation<?>)generatedPopulation).getNetwork(networkName);	
 		} else 
 			return null;
 	}
 
-	public void setGeneratedPopulation(IPopulation population) {
+	public void setGeneratedPopulation(IPopulation<? extends ADemoEntity, ?> population) {
 		this.generatedPopulation = population;
 	}
-	public IPopulation getGeneratedPopulation() {
+	public IPopulation<? extends ADemoEntity, ?> getGeneratedPopulation() {
 		return generatedPopulation;
 	}
 	

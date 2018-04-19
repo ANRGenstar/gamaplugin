@@ -34,7 +34,6 @@ import msi.gaml.statements.CreateStatement;
 import msi.gaml.types.IType;
 import msi.gaml.variables.IVariable;
 import spll.SpllEntity;
-import spll.SpllPopulation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,6 +78,9 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 	public boolean createFrom(IScope scope, List<Map<String, Object>> inits, Integer number, Object source, Arguments init,
 			CreateStatement statement) {
 		GamaPopGenerator gen = (GamaPopGenerator) source;
+		if (gen == null) 
+			return false;
+
 		if (number == null) number = -1;
 		IPopulation<? extends ADemoEntity, Attribute<? extends IValue>> population = GenstarGenerationOperators.generatePop(scope, gen, number);
 		
@@ -88,9 +90,6 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
 		// Used to transform the GamaRange into a GAMA value...
 		IAgent executor = scope.getAgent();
 		msi.gama.metamodel.population.IPopulation<? extends IAgent> gama_pop = executor.getPopulationFor(statement.getDescription().getSpeciesContext().getName());
-
-		
-		if (gen == null) return false;
 		
 		final Collection<Attribute<? extends IValue>> attributes = population.getPopulationAttributes();
 	    int nb = 0;
@@ -132,10 +131,6 @@ public class CreateFromGenstarDelegate implements ICreateDelegate {
         		} else {
             		attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true, var.getType());	
         		}
-        		
-        		// Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true);
-        		// Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(attribute), true, gama_pop.getVar(attribute.getAttributeName()).getType());
-        		// Object attributeValue = GenStarGamaUtils.toGAMAValue(scope, e.getValueForAttribute(local_attribute), true, var.getType());
         		
         		map.put(attributeToPut.getAttributeName(), attributeValue);
         	}

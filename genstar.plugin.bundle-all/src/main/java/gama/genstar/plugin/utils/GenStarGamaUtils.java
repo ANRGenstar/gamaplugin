@@ -1,10 +1,6 @@
 package main.java.gama.genstar.plugin.utils;
 
-import java.util.Set;
-
 import org.graphstream.graph.Edge;
-
-import core.metamodel.IPopulation;
 import core.metamodel.io.GSSurveyType;
 import core.metamodel.value.IValue;
 import core.metamodel.value.binary.BooleanValue;
@@ -16,11 +12,9 @@ import main.java.gama.genstar.plugin.type.GamaPopGenerator;
 import main.java.gama.genstar.plugin.type.GamaRange;
 import main.java.gama.genstar.plugin.type.GamaRangeType;
 import msi.gama.metamodel.agent.IAgent;
-import msi.gama.metamodel.topology.graph.GamaSpatialGraph.VertexRelationship;
+import msi.gama.metamodel.shape.IShape;
 import msi.gama.runtime.IScope;
-import msi.gama.util.IContainer;
 import msi.gama.util.graph.GamaGraph;
-import msi.gaml.species.ISpecies;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 import spin.SpinNetwork;
@@ -97,12 +91,12 @@ public class GenStarGamaUtils {
 	}
 	
 	
-	public static GamaGraph toGAMAGraph(IScope scope, SpinNetwork net, GamaPopGenerator gen) {
+	public static GamaGraph<IAgent,IShape> toGAMAGraph(IScope scope, SpinNetwork net, GamaPopGenerator gen) {
 		if(gen.getAgents().isEmpty())
 			return null;
 		
-		IType nodeType = gen.getAgents().stream().findFirst().orElse(null).getType(); 	
-		GamaGraph gamaNetwork = new GamaGraph(scope, net.isDirected(),nodeType,Types.GEOMETRY);
+		IType<?> nodeType = gen.getAgents().stream().findFirst().orElse(null).getType(); 	
+		GamaGraph<IAgent,IShape> gamaNetwork = new GamaGraph<>(scope, net.isDirected(),nodeType,Types.GEOMETRY);
 		
 		for(IAgent agt : gen.getAgents()) {
 			gamaNetwork.addVertex(agt);
