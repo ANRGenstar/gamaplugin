@@ -44,9 +44,19 @@ In the View Git Repositories, you should have 4 repositories: gama, gamaplugin, 
 # 5. Import the template as Eclipse projects. (similarly)
 
 # 6. Associate genstar library with the GAMA plugin.
-  * in the genstar.plugin.bundle-all plugin, create a folder lib.
-  * Right-click on the parent plugin > Run As >  Maven install
-  * in the 4 genstar projects (genstar-core, -gospl, -spll, -spin), in the target folder, take the genstar-*-jar-with-dependencies.jar and paste it in the plugin lib folder.
+The GAMA Plugin comes with all the necessary jar libraries and in particular the genstar library.
+  
+
+If you want to modify the genstar library, after a modifications you need to build again the genstar libraries:
+  * right-click on the modified plugin > Run As > Maven install
+  * in the genstar project, in the target folder, copy the genstar*.jar and paste it in the plugin lib_genstar folder.
+
+In the case where a ClassNotFoundException appears in GAMA, when running a model using Genstar operators, it could be due to a missing .jar in the gamaplugin plugin. You should thus need to add the missing library in the lib folder (you also have to add it in the plugin.xml, in the classpath pane).
+
+A sure case to avoid any missing library, you can follow the following procedure, to prouce the genstar library with all the needed libraries:
+  * Right-click on the `parent` plugin > Run As >  Maven install
+  * in the 4 genstar projects (genstar-core, -gospl, -spll, -spin), in the target folder, take the genstar-*-jar-with-dependencies.jar and paste them in the plugin `lib_genstar` folder.
+  * add these 4 libraries to the classpath of the gamaplugin plugin and to the classpath in the plugin.xml.
 
 # 7. Ask GAMA to call the plugin at start
   * In ummisco.gama.feature.core.extensions plugin, feature.xml, add the genstar plugin to the Included Plug-ins
