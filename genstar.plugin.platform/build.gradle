@@ -17,7 +17,7 @@ platform {
 
     updateSiteDir new File(buildDir, 'updatesite')
     //updateSiteZipFile new File(buildDir, 'updatesite')
-    eclipseMirror.linux.gtk.x86_64 = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
+    eclipseMirror = 'http://ftp.fau.de/eclipse/technology/epp/downloads/release/mars/R/eclipse-java-mars-R-linux-gtk-x86_64.tar.gz'
     determineImportVersions = true
     useBndHashQualifiers = false
     useFeatureHashQualifiers = false
