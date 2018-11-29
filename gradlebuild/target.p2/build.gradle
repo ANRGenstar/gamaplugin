@@ -3,7 +3,7 @@ apply plugin: 'com.diffplug.gradle.p2.asmaven'
 p2AsMaven {
 
     group 'p2', {
-        repo 'http://gama-platform.org/updates'
+        repo 'http://updates.gama-platform.org'
         iu 'msi.gama.core'
     }
 

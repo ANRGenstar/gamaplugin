@@ -4,12 +4,23 @@ apply plugin: 'eclipse'
 //All dependencies needed to compile the project are defined here, at root level
 
 buildscript {
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+    }
+
     repositories {
-        mavenLocal()
+        //mavenLocal()
+
         maven { url "https://plugins.gradle.org/m2/"}
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-        maven {url 'http://oss.sonatype.org/content/repositories/snapshots/'}
+        maven {
+            url "https://oss.jfrog.org/artifactory/oss-snapshot-local/"
+        }
+        jcenter()
     }
+
 
     // make sure we don't cache stale snapshot versions
     configurations.all {
@@ -17,12 +28,15 @@ buildscript {
     }
 
     dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
         classpath 'org.hidetake:gradle-ssh-plugin:2.7.2'
         classpath "org.standardout:bnd-platform:1.6.0-SNAPSHOT"
         classpath "com.diffplug.gradle:goomph:3.9.0-SNAPSHOT"
         classpath "nu.studer:gradle-credentials-plugin:1.0.1"
     }
 }
+
+apply plugin: "com.jfrog.artifactory"
 
 gradle.afterProject {project, projectState ->
     if (projectState.failure) {
@@ -53,7 +67,7 @@ repositories {
             maven { url 'http://maven.geotoolkit.org' }
             maven { url 'https://mvnrepository.com/'}
             maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-            maven { url 'http://dl.bintray.com/anrgenstar/genstar-packages'}
+            maven { url 'https://oss.jfrog.org/oss-snapshot-local'}
             maven { url 'http://download.osgeo.org/webdav/geotools/'}
             maven { url 'http://repo.boundlessgeo.com/main/' }
             mavenCentral()
