@@ -9,7 +9,7 @@
  *
  **********************************************************************************************/
 
-package main.java.gama.genstar.plugin.type;
+package gama.genstar.plugin.type;
 
 import java.util.ArrayList;
 import java.util.Collection;

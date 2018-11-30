@@ -9,7 +9,7 @@
  *
  **********************************************************************************************/
 
-package main.java.gama.genstar.plugin.statements;
+package gama.genstar.plugin.statements;
 
 import core.metamodel.IPopulation;
 import core.metamodel.attribute.Attribute;
@@ -17,10 +17,10 @@ import core.metamodel.attribute.MappedAttribute;
 import core.metamodel.entity.ADemoEntity;
 import core.metamodel.value.IValue;
 import core.util.random.GenstarRandomUtils;
-import java.gama.genstar.plugin.operators.GenstarGenerationOperators;
-import java.gama.genstar.plugin.type.GamaPopGenerator;
-import java.gama.genstar.plugin.type.GamaPopGeneratorType;
-import java.gama.genstar.plugin.utils.GenStarGamaUtils;
+import gama.genstar.plugin.operators.GenstarGenerationOperators;
+import gama.genstar.plugin.type.GamaPopGenerator;
+import gama.genstar.plugin.type.GamaPopGeneratorType;
+import gama.genstar.plugin.utils.GenStarGamaUtils;
 import msi.gama.common.interfaces.ICreateDelegate;
 import msi.gama.common.interfaces.IKeyword;
 import msi.gama.metamodel.agent.IAgent;

@@ -1,4 +1,4 @@
-package java.gama.genstar.plugin.operators;
+package genstar.plugin.operators;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,8 +12,8 @@ import core.metamodel.attribute.AttributeFactory;
 import core.metamodel.io.GSSurveyWrapper;
 import core.metamodel.value.IValue;
 import core.util.excpetion.GSIllegalRangedData;
-import java.gama.genstar.plugin.type.GamaPopGenerator;
-import java.gama.genstar.plugin.utils.GenStarGamaUtils;
+import gama.genstar.plugin.type.GamaPopGenerator;
+import gama.genstar.plugin.utils.GenStarGamaUtils;
 import msi.gama.common.util.FileUtils;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;

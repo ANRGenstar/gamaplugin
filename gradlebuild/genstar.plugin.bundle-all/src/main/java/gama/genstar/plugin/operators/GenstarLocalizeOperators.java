@@ -1,6 +1,6 @@
-package java.gama.genstar.plugin.operators;
+package gama.genstar.plugin.operators;
 
-import java.gama.genstar.plugin.type.GamaPopGenerator;
+import gama.genstar.plugin.type.GamaPopGenerator;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
 import msi.gama.precompiler.GamlAnnotations.operator;

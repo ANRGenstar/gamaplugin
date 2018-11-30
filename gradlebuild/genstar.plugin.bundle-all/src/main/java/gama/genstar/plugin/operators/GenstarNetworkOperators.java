@@ -1,8 +1,8 @@
-package java.gama.genstar.plugin.operators;
+package gama.genstar.plugin.operators;
 
 import core.metamodel.entity.ADemoEntity;
-import java.gama.genstar.plugin.type.GamaPopGenerator;
-import java.gama.genstar.plugin.utils.GenStarGamaUtils;
+import gama.genstar.plugin.type.GamaPopGenerator;
+import gama.genstar.plugin.utils.GenStarGamaUtils;
 import msi.gama.metamodel.agent.IAgent;
 import msi.gama.precompiler.GamlAnnotations.operator;
 import msi.gama.runtime.IScope;
@@ -36,13 +36,12 @@ public class GenstarNetworkOperators {
 		gen.addNetworkGenerator(graphName, SpinNetworkFactory.getInstance().getSpinPopulationGenerator(graphName, graphGenerator, 0.0, 0));
 		return gen;
 	}
-	// TODO : Fix problem with gamarange, see genstargamautils
 
-	/*@operator(value = "get_network", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
+	@operator(value = "get_network", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})
 	public static IGraph get_graph(IScope scope, GamaPopGenerator gen, String networkName) {
 		SpinNetwork net = gen.getNetwork(networkName);		
 		return GenStarGamaUtils.toGAMAGraph(scope, net, gen);
-	}*/
+	}
 	
 	@operator(value = "associate_population_agents", can_be_const = true, category = { "Gen*" }, concept = { "Gen*"})	
 	public static GamaPopGenerator associatePopulation(IScope scope, GamaPopGenerator gen, GamlSpecies pop) {

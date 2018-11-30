@@ -1,4 +1,4 @@
-package java.gama.genstar.plugin.type;
+package gama.genstar.plugin.type;
 
 import msi.gama.precompiler.IConcept;
 import msi.gama.precompiler.GamlAnnotations.doc;

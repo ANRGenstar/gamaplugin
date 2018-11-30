@@ -1,4 +1,4 @@
-package java.gama.genstar.plugin.utils;
+package gama.genstar.plugin.utils;
 
 import org.graphstream.graph.Edge;
 import org.jgrapht.graph.*;
@@ -9,9 +9,9 @@ import core.metamodel.value.numeric.ContinuousValue;
 import core.metamodel.value.numeric.IntegerValue;
 import core.metamodel.value.numeric.RangeValue;
 import core.util.data.GSEnumDataType;
-import java.gama.genstar.plugin.type.GamaPopGenerator;
-import java.gama.genstar.plugin.type.GamaRange;
-import java.gama.genstar.plugin.type.GamaRangeType;
+import gama.genstar.plugin.type.GamaPopGenerator;
+import gama.genstar.plugin.type.GamaRange;
+import gama.genstar.plugin.type.GamaRangeType;
 import msi.gama.metamodel.agent.IAgent;
 import msi.gama.metamodel.shape.IShape;
 import msi.gama.runtime.IScope;
@@ -90,10 +90,8 @@ public class GenStarGamaUtils {
 		}
 		return gamaValue;
 	}
-	
-	//TODO : GamaRange disapear from latest...
 
-	/*public static GamaGraph<IAgent,IShape> toGAMAGraph(IScope scope, SpinNetwork net, GamaPopGenerator gen) {
+	public static GamaGraph<IAgent,IShape> toGAMAGraph(IScope scope, SpinNetwork net, GamaPopGenerator gen) {
 		if(gen.getAgents().isEmpty())
 			return null;
 		
@@ -112,6 +110,6 @@ public class GenStarGamaUtils {
 		}
 
 		return gamaNetwork;
-	}*/
+	}
 	
 }
