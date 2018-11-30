@@ -1,20 +1,11 @@
 Manifest-Version: 1.0
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Bundle-all
-Bundle-SymbolicName: genstar.plugin.bundle-all;singleton:=true
-Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: msi.gama.core;bundle-version="1.7.0",
- msi.gama.ext;bundle-version="1.7.0"
-Export-Package: main.java.gama.genstar.plugin
-Bundle-ClassPath: .,
- lib/poi-ooxml-3.9.jar,
- lib/log4j-api-2.7.jar,
- lib/log4j-core-2.7.jar,
- lib/opencsv-2.3.jar,
- lib/commons-io-2.5.jar,
- lib/jts-example-1.14.0.jar,
- lib_genstar/genstar-core-1.0.3.jar,
- lib_genstar/genstar-gospl-1.0.3.jar,
- lib_genstar/genstar-spin-1.0.3.jar,
- lib_genstar/genstar-spll-1.0.3.jar
+Bundle-SymbolicName: genstar.plugin.bundle-all;singleton:=true
+Bundle-Vendor: Gama team
+Bundle-Version: 1.0.0.201811300907
+Conditional-Package: !org.w3c.*, !org.xml.*, !javax.*, !org.jfree.*, !
+ org.graphstream.*, !msi.*, *
+Export-Package: gama.genstar.plugin;version="1.0.0"
+Require-Bundle: msi.gama.core

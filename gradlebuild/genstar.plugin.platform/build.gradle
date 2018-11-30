@@ -30,6 +30,11 @@ platform {
 
 }
 
+//-  https://www.irit.fr/genstar/p2updatesite/
+//- identifiant : genstar
+//- password : gegelerobot7!
+//        - Le serveur FTP :  ftpintra.irit.fr
+
 apply plugin: 'nu.studer.credentials'
 apply plugin: 'org.hidetake.ssh'
 

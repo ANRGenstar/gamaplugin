@@ -9,7 +9,7 @@
  *
  **********************************************************************************************/
 
-package main.java.gama.genstar.plugin.type;
+package java.gama.genstar.plugin.type;
 
 import core.configuration.dictionary.AttributeDictionary;
 import core.metamodel.IPopulation;
@@ -22,7 +22,7 @@ import msi.gama.common.interfaces.IValue;
 import msi.gama.metamodel.agent.IAgent;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.getter;
-import msi.gama.precompiler.GamlAnnotations.var;
+import msi.gama.precompiler.GamlAnnotations.variable;
 import msi.gama.precompiler.GamlAnnotations.vars;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
@@ -43,13 +43,13 @@ import java.util.*;
 
 // TODO var à revoir completement
 @vars({
-	@var(name = "attributes", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of attribute names") }),
-	@var(name = "census_files", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of census files") }), 
-	@var(name = "generation_algo", type = IType.STRING, doc = {@doc("Returns the name of the generation algorithm") }),
-	@var(name = "mappers", type = IType.MAP, doc = {@doc("Returns the list of mapper") }),
-	@var(name = "spatial_file", type = IType.STRING, doc = {@doc("Returns the spatial file used to localize entities") }),
-	@var(name = "spatial_mapper_file", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of spatial files used to map the entities to areas") }),
-	@var(name = "spatial_matcher_file", type = IType.STRING, doc = {@doc("Returns the spatial file used to match entities and areas") })
+	@variable(name = "attributes", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of attribute names") }),
+	@variable(name = "census_files", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of census files") }),
+	@variable(name = "generation_algo", type = IType.STRING, doc = {@doc("Returns the name of the generation algorithm") }),
+	@variable(name = "mappers", type = IType.MAP, doc = {@doc("Returns the list of mapper") }),
+	@variable(name = "spatial_file", type = IType.STRING, doc = {@doc("Returns the spatial file used to localize entities") }),
+	@variable(name = "spatial_mapper_file", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of spatial files used to map the entities to areas") }),
+	@variable(name = "spatial_matcher_file", type = IType.STRING, doc = {@doc("Returns the spatial file used to match entities and areas") })
 })
 public class GamaPopGenerator implements IValue {
 
@@ -121,7 +121,7 @@ public class GamaPopGenerator implements IValue {
 		return null;
 	}
 
-	@Override
+	//@Override
 	public IType<?> getType() {
 		// TODO Auto-generated method stub
 		return null;

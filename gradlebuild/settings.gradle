@@ -1,3 +1,6 @@
+
+rootProject.name = "gama-genstar"
+
 include 'genstar.plugin.bundle-all'
 include 'genstar.plugin.platform'
 

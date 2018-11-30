@@ -1,1 +1,2 @@
 .gradle/
+gradlebuild/genstar.plugin.bundle-all/META-INF/*

@@ -1,4 +1,4 @@
-package main.java.gama.genstar.plugin.operators;
+package java.gama.genstar.plugin.operators;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +40,8 @@ import gospl.io.exception.InvalidSurveyFormatException;
 import gospl.sampler.IDistributionSampler;
 import gospl.sampler.ISampler;
 import gospl.sampler.sr.GosplBasicSampler;
-import main.java.gama.genstar.plugin.type.GamaPopGenerator;
-import main.java.gama.genstar.plugin.utils.GenStarGamaUtils;
+import java.gama.genstar.plugin.type.GamaPopGenerator;
+import java.gama.genstar.plugin.utils.GenStarGamaUtils;
 import msi.gama.metamodel.shape.GamaShape;
 import msi.gama.metamodel.shape.IShape;
 import msi.gama.precompiler.GamlAnnotations.doc;

@@ -1,4 +1,4 @@
-package main.java.gama.genstar.plugin.operators;
+package java.gama.genstar.plugin.operators;
 
 import java.util.Arrays;
 

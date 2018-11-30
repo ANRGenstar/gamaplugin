@@ -4,11 +4,11 @@ evaluationDependsOn(':target.p2')
 //////////
 // JAVA //
 //////////
-apply plugin: 'java'
+
 sourceSets {
   main{
     java{
-      srcDir 'src'
+      srcDir 'src/java/'
       srcDir 'test'
     }
   }
@@ -16,27 +16,27 @@ sourceSets {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-sourceSets {
-  main{
-    java{
-      srcDir 'resources'
-      srcDir 'src'
-    }
-  }
-}
+//apply plugin: 'com.diffplug.gradle.p2.asmaven'
 
-apply plugin: 'com.diffplug.gradle.p2.asmaven'
+
 
 dependencies {
-    compileClasspath('p2:msi.gama.processor:+')
-    compile('p2:ummisco.gama.annotations:+')
-    compile('p2:msi.gama.core:+')
-    compile("org.genstar:genstar-core:latest.integration") {changing = true}
-    compile("org.genstar:genstar-spll:latest.integration")  {changing = true}
-    compile("org.genstar:genstar-spin:latest.integration") {changing = true}
-    compile("org.genstar:genstar-gospl:latest.integration") {changing = true}
+    implementation('p2:msi.gama.processor:+')
+    implementation('p2:ummisco.gama.annotations:+')
+    implementation('p2:msi.gama.core:+')
 
-    compile("net.sf.trove4j:trove4j:+")
+    //Used by msi.gama.core ...
+    // FIX: Forcer l'inclusion dans le classpath ?
+    implementation('org.jgrapht:jgrapht-core:1.0.1')
+    implementation('org.jgrapht:jgrapht-ext:1.0.1')
+
+    //Genstar packages
+    implementation("org.genstar:genstar-core:latest.integration") {changing = true}
+    implementation("org.genstar:genstar-spll:latest.integration")  {changing = true}
+    implementation("org.genstar:genstar-spin:latest.integration") {changing = true}
+    implementation("org.genstar:genstar-gospl:latest.integration") {changing = true}
+
+    implementation("net.sf.trove4j:trove4j:+")
 }
 
 //////////////////////

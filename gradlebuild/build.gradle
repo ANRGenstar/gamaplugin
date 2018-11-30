@@ -1,42 +1,39 @@
 
-apply plugin: 'eclipse'
 
+
+//apply plugin: 'eclipse'
 //All dependencies needed to compile the project are defined here, at root level
 
+/* The buildScript block determines which plugins, task classes, and other classes are available for use in the rest of the build script. */
 buildscript {
 
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-        resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
-    }
+//    configurations.all {
+//        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+//        resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+//    }
 
     repositories {
-        //mavenLocal()
+        mavenLocal()
 
         maven { url "https://plugins.gradle.org/m2/"}
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-        maven {
-            url "https://oss.jfrog.org/artifactory/oss-snapshot-local/"
-        }
+        mavenCentral()
         jcenter()
-    }
-
-
-    // make sure we don't cache stale snapshot versions
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 
     dependencies {
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
         classpath 'org.hidetake:gradle-ssh-plugin:2.7.2'
-        classpath "org.standardout:bnd-platform:1.6.0-SNAPSHOT"
-        classpath "com.diffplug.gradle:goomph:3.9.0-SNAPSHOT"
+        classpath "org.standardout:bnd-platform:1.7.0"
+        classpath "com.diffplug.gradle:goomph:3.17.0"
         classpath "nu.studer:gradle-credentials-plugin:1.0.1"
     }
 }
 
-apply plugin: "com.jfrog.artifactory"
+plugins {
+    id 'eclipse'
+    id 'com.jfrog.artifactory' version '4.8.1'
+}
+
 
 gradle.afterProject {project, projectState ->
     if (projectState.failure) {
@@ -46,30 +43,40 @@ gradle.afterProject {project, projectState ->
     }
 }
 
-repositories {
-    mavenCentral()
+subprojects {
+    if (name.startsWith('genstar.plugin.bundle-all')){
+        apply plugin: 'java-library'
+        repositories{
+            //Geotools first to replace BUG
+            maven { url 'http://download.osgeo.org/webdav/geotools'}
+            //TODO: Force usage of snapshot version for genstar !
+            mavenCentral()
+            mavenLocal()
+            jcenter()
+            maven { url 'http://maven.geotoolkit.org'}
+            maven { url 'http://repo.boundlessgeo.com/main/' }
+            maven { url 'https://oss.jfrog.org/oss-snapshot-local'}
+            maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        }
+    }
 }
 
-    subprojects {
-        repositories {
-            // SNAPSHOT versions are free to rely on other SNAPSHOT libraries
-            if (project.version.endsWith('SNAPSHOT')) {
-                maven {
-                    url 'https://oss.sonatype.org/content/repositories/snapshots/'
+subprojects {
+    repositories {
+        // SNAPSHOT versions are free to rely on other SNAPSHOT libraries
+        if (project.version.endsWith('SNAPSHOT')) {
+            maven {
+                url 'https://oss.sonatype.org/content/repositories/snapshots/'
                 }
             }
             // local eclipse maven (created by Goomph)
             maven {
                 url rootProject.file('target.p2/build/p2asmaven/maven')
             }
-
-            maven { url 'http://maven.nuiton.org/release'}
-            maven { url 'http://maven.geotoolkit.org' }
-            maven { url 'https://mvnrepository.com/'}
-            maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-            maven { url 'https://oss.jfrog.org/oss-snapshot-local'}
-            maven { url 'http://download.osgeo.org/webdav/geotools/'}
-            maven { url 'http://repo.boundlessgeo.com/main/' }
+            //maven { url 'http://maven.nuiton.org/release'}
+            //maven { url 'http://maven.geotoolkit.org' }
+            //maven { url 'http://download.osgeo.org/webdav/geotools/'}
+            //maven { url 'http://repo.boundlessgeo.com/main/' }
             mavenCentral()
 
         }

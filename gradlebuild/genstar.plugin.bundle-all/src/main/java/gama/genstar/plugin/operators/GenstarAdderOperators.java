@@ -1,4 +1,4 @@
-package main.java.gama.genstar.plugin.operators;
+package java.gama.genstar.plugin.operators;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,8 +12,8 @@ import core.metamodel.attribute.AttributeFactory;
 import core.metamodel.io.GSSurveyWrapper;
 import core.metamodel.value.IValue;
 import core.util.excpetion.GSIllegalRangedData;
-import main.java.gama.genstar.plugin.type.GamaPopGenerator;
-import main.java.gama.genstar.plugin.utils.GenStarGamaUtils;
+import java.gama.genstar.plugin.type.GamaPopGenerator;
+import java.gama.genstar.plugin.utils.GenStarGamaUtils;
 import msi.gama.common.util.FileUtils;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
@@ -109,10 +109,10 @@ public class GenstarAdderOperators {
 					mapper.put(key, val);
 				}
 			}
-			
+			// FIX : BLIND CHANGE createMappedAttribute => createSTSMappedAttribute
 			try {	
 				String name = referentAttribute.getAttributeName() + "_" + (gen.getInputAttributes().getAttributes().size() + 1);
-				gen.getInputAttributes().addAttributes(attf.createMappedAttribute(name,
+				gen.getInputAttributes().addAttributes(attf.createSTSMappedAttribute(name,
 						GenStarGamaUtils.toDataType(dataType, ordered), referentAttribute, mapper));
 			} catch (GSIllegalRangedData e) {
 				e.printStackTrace();
