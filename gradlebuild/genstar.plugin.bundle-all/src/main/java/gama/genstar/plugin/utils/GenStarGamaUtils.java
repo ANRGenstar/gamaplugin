@@ -97,7 +97,7 @@ public class GenStarGamaUtils {
 		if(gen.getAgents().isEmpty())
 			return null;
 		
-		IType<?> nodeType = gen.getAgents().stream().findFirst().orElse(null).getType(); 	
+		IType<?> nodeType = gen.getAgents().stream().findFirst().orElse(null).getGamlType(); 	
 		GamaGraph<IAgent,IShape> gamaNetwork = new GamaGraph<>(scope, net.isDirected(),nodeType,Types.GEOMETRY);
 		
 		for(IAgent agt : gen.getAgents()) {

@@ -9,7 +9,13 @@
  *
  **********************************************************************************************/
 
-package java.gama.genstar.plugin.type;
+package main.java.gama.genstar.plugin.type;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import core.configuration.dictionary.AttributeDictionary;
 import core.metamodel.IPopulation;
@@ -37,14 +43,12 @@ import spll.io.SPLVectorFile;
 import spll.popmapper.distribution.ISpatialDistribution;
 import spll.popmapper.distribution.SpatialDistributionFactory;
 
-import java.util.*;
-
 
 
 // TODO var à revoir completement
 @vars({
 	@variable(name = "attributes", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of attribute names") }),
-	@variable(name = "census_files", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of census files") }),
+	@variable(name = "census_files", type = IType.LIST, of = IType.STRING, doc = {@doc("Returns the list of census files") }), 
 	@variable(name = "generation_algo", type = IType.STRING, doc = {@doc("Returns the name of the generation algorithm") }),
 	@variable(name = "mappers", type = IType.MAP, doc = {@doc("Returns the list of mapper") }),
 	@variable(name = "spatial_file", type = IType.STRING, doc = {@doc("Returns the spatial file used to localize entities") }),
@@ -117,12 +121,6 @@ public class GamaPopGenerator implements IValue {
 	
 	@Override
 	public String serialize(boolean includingBuiltIn) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	//@Override
-	public IType<?> getType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
