@@ -10,6 +10,7 @@ configurations {
     }
 }
 */
+
 apply plugin: 'java'
 apply plugin: 'org.standardout.bnd-platform'
 

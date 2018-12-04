@@ -1,5 +1,10 @@
-
 evaluationDependsOn(':target.p2')
+
+apply plugin: 'org.standardout.bnd-platform'
+
+// handle build.properties correctly
+apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
+apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
 
 //////////
 // JAVA //
@@ -13,16 +18,27 @@ sourceSets {
     }
   }
 }
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-//apply plugin: 'com.diffplug.gradle.p2.asmaven'
+task copyAllDependencies(type: Copy) {
+    //referring to the 'compile' configuration
+    from configurations.compileClasspath
+    into 'jar'
+}
 
+//task copyToLib(type: Copy) {
+//    from configurations.compile
+//    into "$buildDir/libs"
+//}
+//
+//build.dependsOn(copyToLib)
 
-
+// Dependencies available from maven local repository
 dependencies {
-    implementation('p2:msi.gama.processor:+')
     implementation('p2:ummisco.gama.annotations:+')
+    implementation('p2:msi.gama.processor:+')
     implementation('p2:msi.gama.core:+')
 
     //Used by msi.gama.core ...
@@ -39,43 +55,11 @@ dependencies {
     implementation("net.sf.trove4j:trove4j:+")
 }
 
-//////////////////////
-// ECLIPSE PROJECTS //
-//////////////////////
-
-// Generate eclipse configuration
-apply plugin: 'eclipse'
-
-// remove the build folder
-//apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
-
-// improve the project deps
 apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
-
-eclipse {
-    project {
-        // Project natures allow a plug-in to tag a project as a specific kind of project
-        natures 'org.eclipse.pde.PluginNature'
-        natures 'org.eclipse.jdt.core.javanature'
-
-        buildCommand 'org.eclipse.jdt.core.javabuilder'
-        buildCommand 'org.eclipse.pde.ManifestBuilder'
-        buildCommand 'org.eclipse.pde.SchemaBuilder'
-    }
-    classpath {
-        downloadSources true
-        downloadJavadoc true
-    }
-}
 
 ////////////////////
 // PLUGIN GOOMPH  //
 ////////////////////
-
-// handle build.properties correctly
-apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
-
-apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
 
 // configure the OSGi bundle
 jar.manifest.attributes(

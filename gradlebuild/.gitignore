@@ -1,2 +1,2 @@
 .gradle/
-gradlebuild/genstar.plugin.bundle-all/META-INF/*
+genstar.plugin.bundle-all/META-INF/MANIFEST.MF

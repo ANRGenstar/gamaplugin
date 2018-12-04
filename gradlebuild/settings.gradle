@@ -1,8 +1,8 @@
 
 rootProject.name = "gama-genstar"
 
-include 'genstar.plugin.bundle-all'
-include 'genstar.plugin.platform'
-
 include 'target.p2'
 include 'target.maven'
+
+include 'genstar.plugin.bundle-all'
+include 'genstar.plugin.platform'
