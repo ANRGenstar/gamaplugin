@@ -77,7 +77,7 @@ species iris_agent {
 
 experiment Rouentemplate type: gui {
 	output {
-		display map scale: true type: opengl {
+		display map type: opengl {
 			species iris_agent;
 			species people;
 		}

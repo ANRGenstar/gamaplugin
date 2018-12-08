@@ -50,7 +50,7 @@ species people {
 
 experiment Rouentemplate type: gui {
 	output {
-		display map scale: true{
+		display map {
 		
 			species people;
 		}

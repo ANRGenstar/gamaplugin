@@ -70,7 +70,7 @@ species road {
 
 experiment Rouentemplate type: gui {
 	output {
-		display map scale: true type: opengl {
+		display map type: opengl {
 			species road;
 			species people;
 		}
